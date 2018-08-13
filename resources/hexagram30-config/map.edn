@@ -1,0 +1,3 @@
+{:logging {
+   :level :debug
+   :nss [io.netty hxgm30]}}
