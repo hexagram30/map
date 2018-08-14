@@ -9,8 +9,11 @@
     [com.stuartsierra.component :as component]
     [hxgm30.map.components.config :as config]
     [hxgm30.map.components.core]
+    [hxgm30.map.components.layers :as layers]
+    [hxgm30.map.io :as map-io]
     [trifl.java :refer [show-methods]])
   (:import
+    (javax.imageio ImageIO)
     (java.net URI)
     (java.nio.file Paths)))
 
