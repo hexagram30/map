@@ -34,43 +34,6 @@
   (into {:coords coords} (map (fn [[k v]]
                            [k (map-io/bands v x y)])
                          (maps system))))
-
-;; XXX These were from the first implementation
-
-; (defn some-data?
-;   [bands]
-;   (some #(not (zero? %)) (mapcat vals (vals bands))))
-
-; (def no-data? (complement some-data?))
-
-;; XXX This was from the thrid implementation
-
-; (defn inc-coord
-;   [x y max-x max-y]
-;   (if (< x (dec max-x))
-;     [(inc x) y]
-;     [0 (inc y)]))
-
-; (defn maps-bands
-;   ([system coords]
-;     (maps-bands system coords (layer-bands system coords)))
-;   ([system coords bands]
-;     (loop [[x y] coords
-;            bs bands]
-;       (if (some-data? bs)
-;         {:coords [x y]
-;          :bands bs}
-;         (let [new-coords (inc-coord x
-;                                     y
-;                                     (config/x-pixels system)
-;                                     (config/y-pixels system))]
-;           ;(println bs)
-;           ;(println (some-data? bs))
-;           ; (println "New coords:" new-coords)
-;           (recur new-coords (layer-bands system new-coords)))))))
-
-;; Turns out this second implementation was the fasted
-
 (defn no-band-data?
   [band]
   (zero? (->> (dissoc band :coords)
@@ -96,10 +59,7 @@
          [x y])
        (map #(layer-bands system %))
        (drop-while #'no-band-data?)
-       first
-       ;(take 1)
-       ;seq
-       ))
+       first))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Lifecycle Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
