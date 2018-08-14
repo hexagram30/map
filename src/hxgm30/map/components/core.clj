@@ -2,6 +2,7 @@
   (:require
     [com.stuartsierra.component :as component]
     [hxgm30.map.components.config :as config]
+    [hxgm30.map.components.layers :as layers]
     [hxgm30.map.components.logging :as logging]
     [taoensso.timbre :as log]))
 
@@ -23,6 +24,11 @@
   (merge (cfg cfg-data)
          log))
 
+(def map-image-layers
+  {:layers (component/using
+            (layers/create-component)
+            [:config :logging])})
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Initializations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -37,13 +43,15 @@
   []
   (-> (config/build-config)
       basic
+      (merge map-image-layers)
       component/map->SystemMap))
 
 (def init-lookup
-  {:basic #'initialize-bare-bones})
+  {:basic #'initialize-bare-bones
+   :default #'initialize})
 
 (defn init
   ([]
-    (init :basic))
+    (init :default))
   ([mode]
     ((mode init-lookup))))
