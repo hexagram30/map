@@ -20,6 +20,32 @@
 ;;;   Config Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Distance
+
+(defn stride
+  [system]
+  (get-in (get-cfg system) [:distance :stride]))
+
+(defn mile
+  [system]
+  (get-in (get-cfg system) [:distance :mile]))
+
+;; Geography
+
+(defn planet-radius
+  [system]
+  (get-in (get-cfg system) [:geography :planet-radius]))
+
+(defn planet-circumference
+  [system]
+  (* 2 Math/PI (planet-radius system)))
+
+(defn planet-area
+  [system]
+  (* Math/PI (Math/pow (planet-radius system) 2)))
+
+;; Logging
+
 (defn log-level
   [system]
   (get-in (get-cfg system) [:logging :level]))
@@ -27,6 +53,48 @@
 (defn log-nss
   [system]
   (get-in (get-cfg system) [:logging :nss]))
+
+;; Maps
+
+(defn x-pixels
+  [system]
+  (get-in (get-cfg system) [:maps :pixels :x]))
+
+(defn y-pixels
+  [system]
+  (get-in (get-cfg system) [:maps :pixels :y]))
+
+(defn map-size
+  [system]
+  [(x-pixels system) (y-pixels system)])
+
+(defn meters-per-pixel
+  [system]
+  (/ (planet-circumference system) (x-pixels system)))
+
+(defn km-per-pixel
+  [system]
+  (/ (meters-per-pixel system) 1000))
+
+(defn miles-per-pixel
+  [system]
+  (/ (meters-per-pixel system) (mile system)))
+
+(defn altitude-map
+  [system]
+  (get-in (get-cfg system) [:maps :altitude]))
+
+(defn biomes-map
+  [system]
+  (get-in (get-cfg system) [:maps :biomes]))
+
+(defn land-sea-map
+  [system]
+  (get-in (get-cfg system) [:maps :ls]))
+
+(defn land-sea-ice-map
+  [system]
+  (get-in (get-cfg system) [:maps :lsi]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Lifecycle Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
