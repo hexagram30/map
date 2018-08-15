@@ -32,6 +32,10 @@
 
 ;; Geography
 
+(defn latitude-circles
+  [system]
+  (get-in (get-cfg system) [:geography :latitude-circles]))
+
 (defn planet-radius
   [system]
   (get-in (get-cfg system) [:geography :planet-radius]))
@@ -123,6 +127,14 @@
 (defn miles-per-pixel
   [system]
   (/ (meters-per-pixel system) (mile system)))
+
+(defn pixels-per-lat-degree
+  [system]
+  (/ (y-pixels system) 2.0 (latitude-circles system)))
+
+(defn lat-minutes-per-pixel
+  [system]
+  (/ 60 (pixels-per-lat-degree system)))
 
 (defn altitude-map
   [system]
