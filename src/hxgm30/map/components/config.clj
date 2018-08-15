@@ -44,6 +44,50 @@
   [system]
   (* Math/PI (Math/pow (planet-radius system) 2)))
 
+(defn ice-color
+  [system]
+  (get-in (get-cfg system) [:geography :colors :ice]))
+
+(defn ice?
+  [system band-color]
+  (let [ice (ice-color system)]
+    (and
+      (> 50 (Math/abs (- (:blue ice)
+                         (:blue band-color))))
+      (> 50 (Math/abs (- (:green ice)
+                         (:green band-color))))
+      (> 50 (Math/abs (- (:red ice)
+                         (:red band-color)))))))
+
+(defn land-color
+  [system]
+  (get-in (get-cfg system) [:geography :colors :land]))
+
+(defn land?
+  [system band-color]
+  (let [land (land-color system)]
+    (and
+      (> 20 (Math/abs (- (:blue land)
+                         (:blue band-color))))
+      (> 60 (Math/abs (- (:green land)
+                         (:green band-color))))
+      (> 90 (Math/abs (- (:red land)
+                         (:red band-color)))))))
+
+(defn sea-color
+  [system]
+  (get-in (get-cfg system) [:geography :colors :sea]))
+
+(defn sea?
+  [system band-color]
+  (let [sea (sea-color system)]
+    (and
+      (> 10 (Math/abs (- (:blue sea)
+                         (:blue band-color))))
+      (> 10 (Math/abs (- (:green sea)
+                         (:green band-color))))
+      (> 10 (Math/abs (- (:red sea)
+                         (:red band-color)))))))
 ;; Logging
 
 (defn log-level

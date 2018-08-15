@@ -53,3 +53,22 @@
   []
   (println (slurp (io/resource "text/banner.txt")))
   :ok)
+
+
+(comment
+
+  ;; Land colors
+  (config/land? (system) {:blue 30 :green 120 :red 196})
+  (config/land? (system) {:blue 34 :green 136 :red 221})
+  (config/land? (system) {:blue 22 :green 90 :red 147})
+  (config/sea? (system) {:blue 22 :green 90 :red 147})
+  ;; Sea colors
+  (config/land? (system) {:blue 119 :green 51 :red 0})
+  (config/sea? (system) {:blue 119 :green 51 :red 0})
+  (config/sea? (system) {:blue 115 :green 49 :red 0})
+  ;; Ice colors
+  (config/ice? (system) {:blue 255 :green 255 :red 255})
+  (config/ice? (system) {:blue 223 :green 223 :red 223})
+  (config/ice? (system) {:blue 119 :green 51 :red 0})
+  (config/ice? (system) {:blue 22 :green 90 :red 147})
+  )
