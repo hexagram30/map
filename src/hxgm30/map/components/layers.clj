@@ -6,6 +6,15 @@
    [taoensso.timbre :as log]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn lon-degrees-per-pixel
+  [row]
+  (let [pixels (count (:data row))]
+    (/ 360.0 pixels)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Layers Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -66,14 +75,20 @@
 
 (defn row
   [system y]
-  (->> (for [x (xs system)] [x y])
-       (map #(layer-bands system %))
-       (remove no-band-data?)))
+  {:index y
+   :data (->> (for [x (xs system)] [x y])
+              (map #(layer-bands system %))
+              (remove no-band-data?))})
 
-(defn lon-degrees-per-pixel
-  [row]
-  (let [pixels (count row)]
-    (/ 360.0 pixels)))
+(defn first-row?
+  [system row-data]
+  (and (some-data? (:data row-data))
+       (no-data? (:data (row system (dec (:index row-data)))))))
+
+(defn last-row?
+  [system row-data]
+  (and (some-data? (:data row-data))
+       (no-data? (:data (row system (inc (:index row-data)))))))
 
 (defn maps-bands
   [system [x-start y-start]]
