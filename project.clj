@@ -52,7 +52,12 @@
         [venantius/yagni "0.1.4"]]}
     :test {
       :plugins [
-        [lein-ltest "0.3.0"]]}}
+        [lein-ltest "0.3.0"]]
+      :test-selectors {
+        :unit #(not (or (:integration %) (:system %)))
+        :integration :integration
+        :system :system
+        :default (complement :system)}}}
   :aliases {
     ;; Dev Aliases
     "repl" ["do"
