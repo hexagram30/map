@@ -70,6 +70,11 @@
        (map #(layer-bands system %))
        (remove no-band-data?)))
 
+(defn lon-degrees-per-pixel
+  [row]
+  (let [pixels (count row)]
+    (/ 360.0 pixels)))
+
 (defn maps-bands
   [system [x-start y-start]]
   (->> (for [y (ys system y-start)
