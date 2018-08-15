@@ -5,11 +5,15 @@
   Definition used for system tests:
   * https://en.wikipedia.org/wiki/Software_testing#System_testing"
   (:require
-    [clojure.test :refer :all]
-    [hxgm30.map.components.layers :as layers]
-    [hxgm30.map.testing.system :as test-system :refer [system]]))
+   [clojure.test :refer :all]
+   [hxgm30.map.components.layers :as layers]
+   [hxgm30.map.testing.system :as test-system :refer [system]]))
 
 (use-fixtures :once test-system/with-system)
+
+(deftest lat-degrees-per-pixel
+  (is (= 0.17450980392156862
+         (layers/lat-degrees-per-pixel (system)))))
 
 (deftest first-row?
   (let [r0 (layers/row (system) 109)

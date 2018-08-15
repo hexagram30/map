@@ -1,8 +1,8 @@
 (ns hxgm30.map.components.config
   (:require
-   [com.stuartsierra.component :as component]
-   [hxgm30.map.config :as config]
-   [taoensso.timbre :as log]))
+    [com.stuartsierra.component :as component]
+    [hxgm30.map.config :as config]
+    [taoensso.timbre :as log]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

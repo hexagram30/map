@@ -1,13 +1,17 @@
 (ns hxgm30.map.components.layers
   (:require
-   [com.stuartsierra.component :as component]
-   [hxgm30.map.components.config :as config]
-   [hxgm30.map.io :as map-io]
-   [taoensso.timbre :as log]))
+    [com.stuartsierra.component :as component]
+    [hxgm30.map.components.config :as config]
+    [hxgm30.map.io :as map-io]
+    [taoensso.timbre :as log]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn lat-degrees-per-pixel
+  [system]
+  (/ 1 (config/pixels-per-lat-degree system)))
 
 (defn lon-degrees-per-pixel
   [row]
