@@ -66,8 +66,9 @@
 
 (defn row
   [system y]
-  (map #(layer-bands system %)
-       (for [x (xs system)] [x y])))
+  (->> (for [x (xs system)] [x y])
+       (map #(layer-bands system %))
+       (remove no-band-data?)))
 
 (defn maps-bands
   [system [x-start y-start]]
