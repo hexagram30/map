@@ -29,6 +29,18 @@
   [system]
   (get-in system [:layers :maps]))
 
+(defn ys
+  ([system]
+    (ys system 0))
+  ([system y-start]
+    (range y-start (config/y-pixels system))))
+
+(defn xs
+  ([system]
+    (xs system 0))
+  ([system x-start]
+    (range x-start (config/x-pixels system))))
+
 (defn layer-bands
   [system [x y :as coords]]
   (into {:coords coords} (map (fn [[k v]]
@@ -52,10 +64,15 @@
 
 (def some-data? (complement no-data?))
 
+(defn row
+  [system y]
+  (map #(layer-bands system %)
+       (for [x (xs system)] [x y])))
+
 (defn maps-bands
   [system [x-start y-start]]
-  (->> (for [y (range y-start (config/y-pixels system))
-             x (range x-start (config/x-pixels system))]
+  (->> (for [y (ys system y-start)
+             x (xs system x-start)]
          [x y])
        (map #(layer-bands system %))
        (drop-while #'no-band-data?)
