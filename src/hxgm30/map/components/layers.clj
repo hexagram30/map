@@ -19,6 +19,29 @@
     (/ 360.0 pixels)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Records   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defrecord Bands
+  [altitude
+   biome
+   coord
+   ls
+   lsi])
+
+(defrecord Row
+  [data
+   index])
+
+(defrecord Tile
+  [altitude
+   biome
+   center
+   ls
+   lsi
+   polygon])
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Layers Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -56,9 +79,11 @@
 
 (defn layer-bands
   [system [x y :as coords]]
-  (into {:coords coords} (map (fn [[k v]]
-                           [k (map-io/bands v x y)])
-                         (maps system))))
+  (map->Bands
+    (into {:coords coords} (map (fn [[k v]]
+                             [k (map-io/bands v x y)])
+                           (maps system)))))
+
 (defn no-band-data?
   [band]
   (zero? (->> (dissoc band :coords)
@@ -79,10 +104,10 @@
 
 (defn row
   [system y]
-  {:index y
-   :data (->> (for [x (xs system)] [x y])
-              (map #(layer-bands system %))
-              (remove no-band-data?))})
+  (map->Row {:index y
+             :data (->> (for [x (xs system)] [x y])
+                        (map #(layer-bands system %))
+                        (remove no-band-data?))}))
 
 (defn first-row?
   [system row-data]
