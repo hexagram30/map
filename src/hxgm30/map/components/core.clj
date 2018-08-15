@@ -29,6 +29,11 @@
             (layers/create-component)
             [:config :logging])})
 
+(def map-image-layers-without-logging
+  {:layers (component/using
+            (layers/create-component)
+            [:config])})
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Initializations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -46,9 +51,17 @@
       (merge map-image-layers)
       component/map->SystemMap))
 
+(defn initialize-for-tests
+  []
+  (-> (config/build-config)
+      cfg
+      (merge map-image-layers-without-logging)
+      component/map->SystemMap))
+
 (def init-lookup
   {:basic #'initialize-bare-bones
-   :default #'initialize})
+   :default #'initialize
+   :testing #'initialize-for-tests})
 
 (defn init
   ([]
