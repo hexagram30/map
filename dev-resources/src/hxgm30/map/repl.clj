@@ -12,6 +12,7 @@
     [hxgm30.map.components.core]
     [hxgm30.map.components.layers :as layers]
     [hxgm30.map.io :as map-io]
+    [hxgm30.map.util :as util]
     [trifl.java :refer [show-methods]])
   (:import
     (javax.imageio ImageIO)

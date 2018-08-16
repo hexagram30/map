@@ -1,5 +1,6 @@
 (ns hxgm30.map.components.config
   (:require
+    [clojure.set :as set]
     [com.stuartsierra.component :as component]
     [hxgm30.map.config :as config]
     [taoensso.timbre :as log]))
@@ -47,6 +48,35 @@
 (defn planet-area
   [system]
   (* Math/PI (Math/pow (planet-radius system) 2)))
+
+(defn altitude-colors
+  [system]
+  (get-in (get-cfg system) [:geography :colors :altitudes]))
+
+(defn altitude-lookup
+  ([system]
+    (set/map-invert (altitude-colors system)))
+  ([system altitude-color]
+    (get (altitude-lookup system) altitude-color)))
+
+(defn biome-colors
+  [system]
+  (get-in (get-cfg system) [:geography :colors :biomes]))
+
+(defn biome-lookup
+  ([system]
+    (let [biomes (set/map-invert (biome-colors system))
+          sets (filter (fn [[k v]] (set? k)) biomes)
+          split-out (->> sets
+                         (mapcat (fn [[k v]] (map #(vector % v) k)))
+                         (into {}))]
+      (merge (->> sets
+                  (map first)
+                  (cons biomes)
+                  (apply dissoc))
+             split-out)))
+  ([system biome-color]
+    (get (biome-lookup system) biome-color)))
 
 (defn ice-color
   [system]

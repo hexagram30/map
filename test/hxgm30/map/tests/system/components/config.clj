@@ -27,3 +27,25 @@
   (is (config/ice? (system) {:blue 223 :green 223 :red 223}))
   (is (not (config/ice? (system) {:blue 119 :green 51 :red 0})))
   (is (not (config/ice? (system) {:blue 22 :green 90 :red 147}))))
+
+(deftest altitude-lookup
+  (is (= :12000
+         (config/altitude-lookup (system) {:red 221 :green 136 :blue 34})))
+  (is (= :12000
+         (config/altitude-lookup (system) {:green 136 :red 221 :blue 34})))
+  (is (= :12000
+         (config/altitude-lookup (system) {:blue 34 :green 136 :red 221}))))
+
+(deftest biome-lookup
+  (is (= :coastal-lowlands
+         (config/biome-lookup (system) {:red 235 :green 240 :blue 150})))
+  (is (= :forest-conifer
+         (config/biome-lookup (system) {:red 120 :green 112 :blue 7})))
+  (is (= :forest-conifer
+         (config/biome-lookup (system) {:red 156 :green 135 :blue 18})))
+  (is (= :glacier
+         (config/biome-lookup (system) {:red 255 :green 255 :blue 255})))
+  (is (= :glacier
+         (config/biome-lookup (system) {:red 200 :green 200 :blue 200})))
+  (is (= :glacier
+         (config/biome-lookup (system) {:red 181 :green 181 :blue 181}))))

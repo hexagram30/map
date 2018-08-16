@@ -40,7 +40,7 @@
   (log/info "Starting map layers component ...")
   (log/debug "Started map layers component.")
   (assoc this :maps {:altitude (map-io/read-planet (config/altitude-map this))
-                     :biomes (map-io/read-planet (config/altitude-map this))
+                     :biomes (map-io/read-planet (config/biomes-map this))
                      :ls (map-io/read-planet (config/land-sea-map this))
                      :lsi (map-io/read-planet (config/land-sea-ice-map this))}))
 

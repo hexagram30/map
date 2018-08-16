@@ -72,17 +72,40 @@
        :29000 {:red 179 :green 179 :blue 179}
        :30000 {:red 170 :green 170 :blue 170}}
      :biomes {
-       :coastal-lowlands {}
-       :forest-lowlands-conifer {}
-       :forest-lowlands-hardwood {}
-       :savannas {}
-       :forest-conifer {}
-       :forest-hardwood {}
-       :high-prairies {}
-       :forest-boreal {}
-       :montane-grasslands {}
-       :rock-and-ice {}
-       :tundra {}}
+       ;; Lowlands and Tropics
+       :coastal-lowlands {:red 235 :green 240 :blue 150}
+       :lowlands {:red 160 :green 209 :blue 76}
+       :forest-lowlands-hardwood {:red 74 :green 127 :blue 47}
+       :forest-lowlands-mixed #{{:red 63 :green 173 :blue 67}
+                                {:red 0 :green 122 :blue 31}}
+       :forest-lowlands-conifer #{{:red 63 :green 173 :blue 67}
+                                  {:red 21 :green 98 :blue 32}}
+       :grasslands {:red 43 :green 79 :blue 12}
+       :shrub-and-grasslands {:red 64 :green 70 :blue 6}
+       ;; Midlands and Temperate
+       :shrublands {:red 108 :green 77 :blue 0}
+       :forest-hardwood {:red 104 :green 92 :blue 1}
+       :forest-mixed {:red 205 :green 201 :blue 5}
+       :forest-conifer #{{:red 120 :green 112 :blue 7}
+                         {:red 156 :green 135 :blue 18}}
+       ;; Highlands and Arctic
+       :forest-boreal #{{:red 52 :green 92 :blue 110}
+                        {:red 66 :green 103 :blue 130}
+                        {:red 51 :green 108 :blue 120}}
+       :montane-grasslands {:red 108 :green 152 :blue 201}
+       :rock-and-ice #{{:red 20 :green 48 :blue 108}
+                       {:red 56 :green 75 :blue 113}}
+       :tundra #{{:red 98 :green 115 :blue 145}
+                 {:red 186 :green 207 :blue 236}}
+       ;; Ice and Glaciers
+       :glacier #{{:red 255 :green 255 :blue 255}
+                  {:red 216 :green 216 :blue 216}
+                  {:red 209 :green 209 :blue 209}
+                  {:red 202 :green 202 :blue 202}
+                  {:red 200 :green 200 :blue 200}
+                  {:red 195 :green 195 :blue 195}
+                  {:red 188 :green 188 :blue 188}
+                  {:red 181 :green 181 :blue 181}}}
      ;; LSI
      :land {:blue 30 :green 120 :red 196}
      :sea {:blue 119 :green 51 :red 0}
