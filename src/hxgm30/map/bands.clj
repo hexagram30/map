@@ -18,7 +18,7 @@
 (defn coords->bands
   [system [x y :as coords]]
   (->> (layers/maps system)
-       (map (fn [[k v]] [(if (= k :bioms) :biom k)
+       (map (fn [[k v]] [(if (= k :biomes) :biome k)
                          (map-io/bands v x y)]))
        (into {:coords coords})
        (map->Bands)))
@@ -39,23 +39,24 @@
   ([system coords]
     (first (all-bands system coords))))
 
-(defn unique
+(defn unique-colors
   ([system ^Keyword field]
-    (unique system field [0 0]))
+    (unique-colors system field [0 0]))
   ([system ^Keyword field coords]
     (->> coords
          (all-bands system)
          (map field)
-         set)))
+         set
+         (sort-by (juxt :red :green :blue)))))
 
 (defn unique-altitudes
   ([system]
     (unique-altitudes system [0 0]))
   ([system coords]
-    (unique system :altitude coords)))
+    (unique-colors system :altitude coords)))
 
 (defn unique-biomes
   ([system]
-    (unique-altitudes system [0 0]))
+    (unique-biomes system [0 0]))
   ([system coords]
-    (unique system :biome coords)))
+    (unique-colors system :biome coords)))
