@@ -7,6 +7,7 @@
     [clojusc.system-manager.core :refer :all]
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
+    [hxgm30.map.bands :as bands]
     [hxgm30.map.components.config :as config]
     [hxgm30.map.components.core]
     [hxgm30.map.components.layers :as layers]
