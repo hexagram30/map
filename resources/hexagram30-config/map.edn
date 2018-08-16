@@ -11,19 +11,78 @@
    :meridian-separation 30 ; degrees
    :latitude-circles 89
    :colors {
-     ;; Altitudes
-     ;; Biomes
-     :coastal-lowlands {}
-     :forest-lowlands-conifer {}
-     :forest-lowlands-hardwood {}
-     :savannas {}
-     :forest-conifer {}
-     :forest-hardwood {}
-     :high-prairies {}
-     :forest-boreal {}
-     :montane-grasslands {}
-     :rock-and-ice {}
-     :tundra {}
+     :altitudes {
+       :-25000 {:red 0 :green 49 :blue 115}
+       :-24000 {:red 0 :green 49 :blue 116}
+       :-23000 {:red 0 :green 51 :blue 119}
+       :-22000 {:red 1 :green 49 :blue 116}
+       :-21000 {:red 1 :green 50 :blue 116}
+       :-20000 {:red 1 :green 50 :blue 117}
+       :-19000 {:red 2 :green 50 :blue 117}
+       :-18000 {:red 2 :green 50 :blue 118}
+       :-17000 {:red 3 :green 50 :blue 119}
+       :-16000 {:red 3 :green 51 :blue 120}
+       :-15000 {:red 4 :green 51 :blue 120}
+       :-14000 {:red 4 :green 51 :blue 121}
+       :-13000 {:red 5 :green 51 :blue 121}
+       :-12000 {:red 5 :green 51 :blue 122}
+       :-11000 {:red 6 :green 52 :blue 122}
+       :-10000 {:red 6 :green 52 :blue 123}
+       :-9000 {:red 7 :green 52 :blue 124}
+       :-8000 {:red 7 :green 52 :blue 125}
+       :-7000 {:red 8 :green 53 :blue 125}
+       :-6000 {:red 8 :green 53 :blue 126}
+       :-5000 {:red 9 :green 53 :blue 126}
+       :-4000 {:red 9 :green 53 :blue 127}
+       :-3000 {:red 10 :green 54 :blue 128}
+       :-2000 {:red 11 :green 56 :blue 133}
+       :-1000 {:red 23 :green 65 :blue 157}
+       ;; Lowlands
+       :1000 {:red 0 :green 68 :blue 0}
+       :2000 {:red 22 :green 79 :blue 0}
+       :3000 {:red 34 :green 102 :blue 0}
+       :4000 {:red 51 :green 102 :blue 0}
+       :5000 {:red 34 :green 136 :blue 0}
+       :6000 {:red 102 :green 130 :blue 0}
+       :7000 {:red 119 :green 170 :blue 0}
+       :8000 {:red 187 :green 221 :blue 0}
+       :9000 {:red 147 :green 136 :blue 11}
+       ;; Midlands
+       :10000 {:red 255 :green 187 :blue 34}
+       :11000 {:red 238 :green 170 :blue 34}
+       :12000 {:red 221 :green 136 :blue 34}
+       :13000 {:red 204 :green 136 :blue 34}
+       ;; Highlands
+       :14000 {:red 164 :green 119 :blue 22}
+       :15000 {:red 153 :green 102 :blue 22}
+       :16000 {:red 187 :green 102 :blue 34}
+       :17000 {:red 170 :green 85 :blue 34}
+       :18000 {:red 153 :green 85 :blue 34}
+       :19000 {:red 136 :green 68 :blue 34}
+       :20000 {:red 119 :green 51 :blue 34}
+       :21000 {:red 85 :green 51 :blue 17}
+       :22000 {:red 68 :green 34 :blue 0}
+       ;; Snow summits/glaciers
+       :23000 {:red 255 :green 255 :blue 255}
+       :24000 {:red 214 :green 214 :blue 214}
+       :25000 {:red 205 :green 205 :blue 205}
+       :26000 {:red 196 :green 196 :blue 196}
+       :27000 {:red 188 :green 188 :blue 188}
+       :28000 {:red 185 :green 185 :blue 185}
+       :29000 {:red 179 :green 179 :blue 179}
+       :30000 {:red 170 :green 170 :blue 170}}
+     :biomes {
+       :coastal-lowlands {}
+       :forest-lowlands-conifer {}
+       :forest-lowlands-hardwood {}
+       :savannas {}
+       :forest-conifer {}
+       :forest-hardwood {}
+       :high-prairies {}
+       :forest-boreal {}
+       :montane-grasslands {}
+       :rock-and-ice {}
+       :tundra {}}
      ;; LSI
      :land {:blue 30 :green 120 :red 196}
      :sea {:blue 119 :green 51 :red 0}
