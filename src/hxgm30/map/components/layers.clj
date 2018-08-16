@@ -19,8 +19,8 @@
     (/ 360.0 pixels)))
 
 (defn no-band-data?
-  [band]
-  (zero? (->> (dissoc band :coords)
+  [pixel-bands]
+  (zero? (->> (dissoc pixel-bands :coords)
               vals
               (map #(->> %
                          vals
@@ -28,8 +28,8 @@
               (reduce +))))
 
 (defn no-data?
-  [bands]
-  (->> bands
+  [bands-coll]
+  (->> bands-coll
        (map no-band-data?)
        (some false?)
        not))
@@ -43,7 +43,7 @@
 (defrecord Bands
   [altitude
    biome
-   coord
+   coords
    ls
    lsi])
 
@@ -55,8 +55,9 @@
   [altitude
    biome
    center
-   ls
-   lsi
+   land?
+   sea?
+   ice?
    polygon])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -97,10 +98,20 @@
 
 (defn layer-bands
   [system [x y :as coords]]
-  (map->Bands
-    (into {:coords coords} (map (fn [[k v]]
-                             [k (map-io/bands v x y)])
-                           (maps system)))))
+  (->> (maps system)
+       (map (fn [[k v]] [(if (= k :bioms) :biom k)
+                         (map-io/bands v x y)]))
+       (into {:coords coords})
+       (map->Bands)))
+
+(defn maps-bands
+  [system [x-start y-start]]
+  (->> (for [y (ys system y-start)
+             x (xs system x-start)]
+         [x y])
+       (map #(layer-bands system %))
+       (drop-while #'no-band-data?)
+       first))
 
 (defn row
   [system y]
@@ -119,14 +130,20 @@
   (and (some-data? (:data row-data))
        (no-data? (:data (row system (inc (:index row-data)))))))
 
-(defn maps-bands
-  [system [x-start y-start]]
-  (->> (for [y (ys system y-start)
-             x (xs system x-start)]
-         [x y])
-       (map #(layer-bands system %))
-       (drop-while #'no-band-data?)
-       first))
+(defn bands->tile
+  [system pixel-bands]
+  (map->Tile
+    {:altitude nil
+     :biome nil
+     :center nil
+     :ice? (config/ice? system (:lsi pixel-bands))
+     :land? (config/land? system (:ls pixel-bands))
+     :sea? (config/sea? system (:ls pixel-bands))
+     :polygon nil}))
+
+(defn row->tiles
+  [system row]
+  (map #(bands->tile system %) (:data row)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Lifecycle Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

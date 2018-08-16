@@ -34,3 +34,15 @@
     (is (layers/last-row? (system) r5))
     (is (not (layers/last-row? (system) r6)))
     (is (not (layers/last-row? (system) r7)))))
+
+(deftest bands->tile
+  (let [bands (first (:data (layers/row (system) 111)))]
+    (is (= #hxgm30.map.components.layers.Tile{
+            :altitude nil
+            :biome nil
+            :center nil
+            :land? false
+            :sea? true
+            :ice? true
+            :polygon nil}
+           (layers/bands->tile (system) bands)))))
