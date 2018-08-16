@@ -4,6 +4,9 @@
 
 [![][logo]][logo-large]
 
+## Sample World Map
+
+[![][map]][map-large]
 
 ## Usage
 
@@ -36,3 +39,5 @@ Apache License, Version 2.0
 
 [logo]: https://raw.githubusercontent.com/hexagram30/resources/master/branding/logo/h30-logo-2-long-with-text-x695.png
 [logo-large]: https://raw.githubusercontent.com/hexagram30/resources/master/branding/logo/h30-logo-2-long-with-text-x3440.png
+[map]: https://raw.githubusercontent.com/hexagram30/map/master/resources/planets/001-mercator-altitude-small.jpg
+[map-large]: https://raw.githubusercontent.com/hexagram30/map/master/resources/planets/001-mercator-altitude.jpg
