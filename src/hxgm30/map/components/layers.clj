@@ -18,6 +18,24 @@
   (let [pixels (count (:data row))]
     (/ 360.0 pixels)))
 
+(defn no-band-data?
+  [band]
+  (zero? (->> (dissoc band :coords)
+              vals
+              (map #(->> %
+                         vals
+                         (reduce +)))
+              (reduce +))))
+
+(defn no-data?
+  [bands]
+  (->> bands
+       (map no-band-data?)
+       (some false?)
+       not))
+
+(def some-data? (complement no-data?))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Records   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -83,24 +101,6 @@
     (into {:coords coords} (map (fn [[k v]]
                              [k (map-io/bands v x y)])
                            (maps system)))))
-
-(defn no-band-data?
-  [band]
-  (zero? (->> (dissoc band :coords)
-              vals
-              (map #(->> %
-                         vals
-                         (reduce +)))
-              (reduce +))))
-
-(defn no-data?
-  [bands]
-  (->> bands
-       (map no-band-data?)
-       (some false?)
-       not))
-
-(def some-data? (complement no-data?))
 
 (defn row
   [system y]
