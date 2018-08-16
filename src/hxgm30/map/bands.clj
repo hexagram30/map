@@ -4,7 +4,9 @@
     [hxgm30.map.components.layers :as layers]
     [hxgm30.map.io :as map-io]
     [hxgm30.map.util :as util]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log])
+  (:import
+    (clojure.lang Keyword)))
 
 (defrecord Bands
   [altitude
@@ -22,13 +24,38 @@
        (map->Bands)))
 
 (defn all-bands
-  [system [x-start y-start]]
-  (->> (for [y (util/ys system y-start)
-             x (util/xs system x-start)]
-         [x y])
-       (map #(coords->bands system %))
-       (drop-while #'util/no-band-data?)))
+  ([system]
+    (all-bands system [0 0]))
+  ([system [x-start y-start]]
+    (->> (for [y (util/ys system y-start)
+               x (util/xs system x-start)]
+           [x y])
+         (map #(coords->bands system %))
+         (drop-while #'util/no-band-data?))))
 
 (defn first-band
-  [system coords]
-  (first (all-bands system coords)))
+  ([system]
+    (first-band system [0 0]))
+  ([system coords]
+    (first (all-bands system coords))))
+
+(defn unique
+  ([system ^Keyword field]
+    (unique system field [0 0]))
+  ([system ^Keyword field coords]
+    (->> coords
+         (all-bands system)
+         (map field)
+         set)))
+
+(defn unique-altitudes
+  ([system]
+    (unique-altitudes system [0 0]))
+  ([system coords]
+    (unique system :altitude coords)))
+
+(defn unique-biomes
+  ([system]
+    (unique-altitudes system [0 0]))
+  ([system coords]
+    (unique system :biome coords)))
