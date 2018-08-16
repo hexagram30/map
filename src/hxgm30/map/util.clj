@@ -41,3 +41,17 @@
     (xs system 0))
   ([system x-start]
     (range x-start (config/x-pixels system))))
+
+(defn color-map->hex
+  [color-map]
+  (format "0x%02x%02x%02x"
+          (:red color-map)
+          (:green color-map)
+          (:blue color-map)))
+
+(defn color-map->bash-true-color
+  [color-map]
+  (format "printf \"\\x1b[38;2;%s;%s;%sm██\\x1b[0m\\n\""
+          (:red color-map)
+          (:green color-map)
+          (:blue color-map)))
