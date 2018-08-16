@@ -6,61 +6,6 @@
     [taoensso.timbre :as log]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn lat-degrees-per-pixel
-  [system]
-  (/ 1 (config/pixels-per-lat-degree system)))
-
-(defn lon-degrees-per-pixel
-  [row]
-  (let [pixels (count (:data row))]
-    (/ 360.0 pixels)))
-
-(defn no-band-data?
-  [pixel-bands]
-  (zero? (->> (dissoc pixel-bands :coords)
-              vals
-              (map #(->> %
-                         vals
-                         (reduce +)))
-              (reduce +))))
-
-(defn no-data?
-  [bands-coll]
-  (->> bands-coll
-       (map no-band-data?)
-       (some false?)
-       not))
-
-(def some-data? (complement no-data?))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Records   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defrecord Bands
-  [altitude
-   biome
-   coords
-   ls
-   lsi])
-
-(defrecord Row
-  [data
-   index])
-
-(defrecord Tile
-  [altitude
-   biome
-   center
-   land?
-   sea?
-   ice?
-   polygon])
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Layers Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -83,67 +28,6 @@
 (defn maps
   [system]
   (get-in system [:layers :maps]))
-
-(defn ys
-  ([system]
-    (ys system 0))
-  ([system y-start]
-    (range y-start (config/y-pixels system))))
-
-(defn xs
-  ([system]
-    (xs system 0))
-  ([system x-start]
-    (range x-start (config/x-pixels system))))
-
-(defn layer-bands
-  [system [x y :as coords]]
-  (->> (maps system)
-       (map (fn [[k v]] [(if (= k :bioms) :biom k)
-                         (map-io/bands v x y)]))
-       (into {:coords coords})
-       (map->Bands)))
-
-(defn maps-bands
-  [system [x-start y-start]]
-  (->> (for [y (ys system y-start)
-             x (xs system x-start)]
-         [x y])
-       (map #(layer-bands system %))
-       (drop-while #'no-band-data?)
-       first))
-
-(defn row
-  [system y]
-  (map->Row {:index y
-             :data (->> (for [x (xs system)] [x y])
-                        (map #(layer-bands system %))
-                        (remove no-band-data?))}))
-
-(defn first-row?
-  [system row-data]
-  (and (some-data? (:data row-data))
-       (no-data? (:data (row system (dec (:index row-data)))))))
-
-(defn last-row?
-  [system row-data]
-  (and (some-data? (:data row-data))
-       (no-data? (:data (row system (inc (:index row-data)))))))
-
-(defn bands->tile
-  [system pixel-bands]
-  (map->Tile
-    {:altitude nil
-     :biome nil
-     :center nil
-     :ice? (config/ice? system (:lsi pixel-bands))
-     :land? (config/land? system (:ls pixel-bands))
-     :sea? (config/sea? system (:ls pixel-bands))
-     :polygon nil}))
-
-(defn row->tiles
-  [system row]
-  (map #(bands->tile system %) (:data row)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Lifecycle Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
