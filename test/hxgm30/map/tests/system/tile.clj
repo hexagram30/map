@@ -1,7 +1,7 @@
 (deftest bands->tile
   (let [bands (first (:data (row/create (system) 111)))]
-    (is (= (tile/map->Tile{:altitude nil
-                           :biome nil
+    (is (= (tile/map->Tile{:altitude -2000
+                           :biome :glacier
                            :center nil
                            :land? false
                            :sea? true

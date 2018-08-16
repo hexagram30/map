@@ -29,11 +29,11 @@
   (is (not (config/ice? (system) {:blue 22 :green 90 :red 147}))))
 
 (deftest altitude-lookup
-  (is (= :12000
+  (is (= 12000
          (config/altitude-lookup (system) {:red 221 :green 136 :blue 34})))
-  (is (= :12000
+  (is (= 12000
          (config/altitude-lookup (system) {:green 136 :red 221 :blue 34})))
-  (is (= :12000
+  (is (= 12000
          (config/altitude-lookup (system) {:blue 34 :green 136 :red 221}))))
 
 (deftest biome-lookup

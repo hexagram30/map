@@ -57,7 +57,10 @@
   ([system]
     (set/map-invert (altitude-colors system)))
   ([system altitude-color]
-    (get (altitude-lookup system) altitude-color)))
+    (->> altitude-color
+         (get (altitude-lookup system))
+         name
+         (Integer/parseInt))))
 
 (defn biome-colors
   [system]

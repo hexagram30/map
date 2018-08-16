@@ -16,8 +16,8 @@
 (defn bands->tile
   [system pixel-bands]
   (map->Tile
-    {:altitude nil
-     :biome nil
+    {:altitude (config/altitude-lookup system (:altitude pixel-bands))
+     :biome (config/biome-lookup system (:biome pixel-bands))
      :center nil
      :ice? (config/ice? system (:lsi pixel-bands))
      :land? (config/land? system (:ls pixel-bands))
