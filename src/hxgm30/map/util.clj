@@ -55,3 +55,8 @@
           (:red color-map)
           (:green color-map)
           (:blue color-map)))
+
+(def normalize-longitude
+  #(if (<= % 180)
+     %
+     (- % 360)))

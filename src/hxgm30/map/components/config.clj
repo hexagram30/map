@@ -145,6 +145,14 @@
   [system]
   (get-in (get-cfg system) [:maps :pixels :y]))
 
+(defn starting-row
+  [system]
+  (get-in (get-cfg system) [:maps :pixels :starting-row]))
+
+(defn ending-row
+  [system]
+  (get-in (get-cfg system) [:maps :pixels :ending-row]))
+
 (defn map-size
   [system]
   [(x-pixels system) (y-pixels system)])

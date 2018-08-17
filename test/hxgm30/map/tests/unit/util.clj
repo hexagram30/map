@@ -1,4 +1,4 @@
-(ns ^:system hxgm30.map.tests.unit.util
+(ns ^:unit hxgm30.map.tests.unit.util
   "Note: this namespace is exclusively for unit tests.
 
   Definition used for system tests:
@@ -121,3 +121,14 @@
           "0xffbb22"
           "0xffffff"]
          (sort (map #'util/color-map->hex color-maps))))))
+
+(deftest normalize-longitude
+  (is (= 0 (util/normalize-longitude 0)))
+  (is (= 45 (util/normalize-longitude 45)))
+  (is (= 90 (util/normalize-longitude 90)))
+  (is (= 135 (util/normalize-longitude 135)))
+  (is (= 180 (util/normalize-longitude 180)))
+  (is (= -135 (util/normalize-longitude 225)))
+  (is (= -90 (util/normalize-longitude 270)))
+  (is (= -45 (util/normalize-longitude 315)))
+  (is (= 0 (util/normalize-longitude 360))))

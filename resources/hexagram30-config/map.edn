@@ -136,4 +136,6 @@
      ;; day, one pixel can hold, for example, one whole city (10 mile radius),
      ;; two halves of two cities, and one quarter of another city.
      :x 1600
-     :y 1020}}}
+     :y 1020
+     :starting-row 111
+     :ending-row 909}}}

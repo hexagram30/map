@@ -7,6 +7,7 @@
   (:require
     [clojure.test :refer :all]
     [hxgm30.map.bands :as bands]
+    [hxgm30.map.components.config :as config]
     [hxgm30.map.row :as row]
     [hxgm30.map.tile :as tile]
     [hxgm30.map.util :as util]
