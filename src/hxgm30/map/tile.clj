@@ -23,12 +23,12 @@
 (def ^:private triangle-south-point
   {:lon 0 :lat -90})
 
-(defn- triagnle-east-point
+(defn- triagnle-lr-point
   [row-item-index lon-per-pix lat-per-pix final-lat]
   {:lon (util/normalize-longitude (* (inc row-item-index) lon-per-pix))
    :lat (- final-lat lat-per-pix)})
 
-(defn- triagnle-west-point
+(defn- triagnle-ll-point
   [row-item-index lon-per-pix lat-per-pix final-lat]
   {:lon (util/normalize-longitude (* row-item-index lon-per-pix))
    :lat (- final-lat lat-per-pix)})
@@ -51,9 +51,9 @@
   additional point: the last point is the same as the first."
   [{:keys [row-item-index lon-per-pix lat-per-pix]}]
   (let [first-point triangle-north-point
-        second-point (triagnle-east-point
+        second-point (triagnle-lr-point
                       row-item-index lon-per-pix lat-per-pix 90)
-        third-point (triagnle-west-point
+        third-point (triagnle-ll-point
                      row-item-index lon-per-pix lat-per-pix 90)]
     [first-point second-point third-point first-point]))
 
@@ -61,11 +61,11 @@
   "This function embodies the the same logic as its north pole counterpart;
   see the docstring of `geodesic-triangle-north` for more details."
   [{:keys [row-item-index lon-per-pix lat-per-pix]}]
-  (let [first-point (triagnle-west-point row-item-index
+  (let [first-point (triagnle-ll-point row-item-index
                                          lon-per-pix
                                          (* -1 lat-per-pix)
                                          -90)
-        second-point (triagnle-east-point row-item-index
+        second-point (triagnle-lr-point row-item-index
                                           lon-per-pix
                                           (* -1 lat-per-pix)
                                           -90)
