@@ -97,11 +97,11 @@
   is currently being processed, thus giving us a value for the current,
   relative place in the y-direction."
   [{:keys [row-item-index row-index lon-per-pix lat-per-pix]}]
-  )
+  :not-implemented)
 
 (defn center-rectangle
   [{:keys [row-item-index row-index lon-per-pix lat-per-pix]}]
-  )
+  :not-implemented)
 
 (defn polygon
   [coords {:keys [first? last?] :as opts}]
@@ -135,8 +135,8 @@
   [system row row-index]
   (let [lat-per-pix (util/lat-degrees-per-pixel system)
         lon-per-pix (util/lon-degrees-per-pixel row)
-        first? (row/first? row)
-        last? (row/last? row)]
+        first? (row/first? system row)
+        last? (row/last? system row)]
     (->> row
          :data
          (map-indexed vector)
