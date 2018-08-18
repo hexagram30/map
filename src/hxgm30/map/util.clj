@@ -62,6 +62,13 @@
      (- % 360)))
 
 (def normalize-latitude
-  #(if (<= % 90)
-     %
-     (- % 180)))
+  "The expected inputs here are latitude values computed by reading a bitmap
+  image from [0 0] (upper left) across, and then proceeding down the rows.
+
+  As such, with the assumption that [0 0] is in the Northern hemisphere (and at
+  the prime meridian), values from 0 through 90 shouldbe inverted so that they
+  are returned as 90 through 0. Similarly, the values below the equator should
+  be changed from 90 through 180 to 0 through -90."
+  #(if (= % 90)
+         0
+         (- 90 %)))

@@ -134,10 +134,10 @@
   (is (= 0 (util/normalize-longitude 360))))
 
 (deftest normalize-latitude
-  (is (= 0 (util/normalize-latitude 0)))
-  (is (= 30 (util/normalize-latitude 30)))
-  (is (= 60 (util/normalize-latitude 60)))
-  (is (= 90 (util/normalize-latitude 90)))
-  (is (= -60 (util/normalize-latitude 120)))
-  (is (= -30 (util/normalize-latitude 150)))
-  (is (= 0 (util/normalize-latitude 180))))
+  (is (= 90 (util/normalize-latitude 0)))
+  (is (= 60 (util/normalize-latitude 30)))
+  (is (= 30 (util/normalize-latitude 60)))
+  (is (= 0 (util/normalize-latitude 90)))
+  (is (= -30 (util/normalize-latitude 120)))
+  (is (= -60 (util/normalize-latitude 150)))
+  (is (= -90 (util/normalize-latitude 180))))
