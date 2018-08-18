@@ -51,8 +51,10 @@
   additional point: the last point is the same as the first."
   [{:keys [row-item-index lon-per-pix lat-per-pix]}]
   (let [first-point triangle-north-point
-        second-point (triagnle-east-point row-item-index lon-per-pix lat-per-pix 90)
-        third-point (triagnle-west-point row-item-index lon-per-pix lat-per-pix 90)]
+        second-point (triagnle-east-point
+                      row-item-index lon-per-pix lat-per-pix 90)
+        third-point (triagnle-west-point
+                     row-item-index lon-per-pix lat-per-pix 90)]
     [first-point second-point third-point first-point]))
 
 (defn geodesic-triangle-south
