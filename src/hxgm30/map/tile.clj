@@ -17,21 +17,53 @@
    pixel
    polygon])
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Utility Constants and Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (def ^:private triangle-north-point
   {:lon 0 :lat 90})
 
 (def ^:private triangle-south-point
   {:lon 0 :lat -90})
 
-(defn- triagnle-lr-point
-  [row-item-index lon-per-pix lat-per-pix final-lat]
-  {:lon (util/normalize-longitude (* (inc row-item-index) lon-per-pix))
-   :lat (- final-lat lat-per-pix)})
+(defn- triangle-base-r-point
+  ([{:keys [lat-per-pix] :as opts} final-lat]
+    (triangle-base-r-point opts lat-per-pix final-lat))
+  ([{:keys [row-item-index lon-per-pix]} lat-per-pix final-lat]
+    {:lon (util/normalize-longitude (* (inc row-item-index) lon-per-pix))
+     :lat (- final-lat lat-per-pix)}))
 
-(defn- triagnle-ll-point
-  [row-item-index lon-per-pix lat-per-pix final-lat]
+(defn- triangle-base-l-point
+  ([{:keys [lat-per-pix] :as opts} final-lat]
+    (triangle-base-l-point opts lat-per-pix final-lat))
+  ([{:keys [row-item-index lon-per-pix]} lat-per-pix final-lat]
+    {:lon (util/normalize-longitude (* row-item-index lon-per-pix))
+     :lat (- final-lat lat-per-pix)}))
+
+(defn rectangle-ul-point
+  [{:keys [row-index row-item-index lon-per-pix lat-per-pix]}]
   {:lon (util/normalize-longitude (* row-item-index lon-per-pix))
-   :lat (- final-lat lat-per-pix)})
+   :lat (util/normalize-latitude (* (dec row-index) lat-per-pix))})
+
+(defn rectangle-ur-point
+  [{:keys [row-index row-item-index lon-per-pix lat-per-pix]}]
+  {:lon (util/normalize-longitude (* (inc row-item-index) lon-per-pix))
+   :lat (util/normalize-latitude (* (dec row-index) lat-per-pix))})
+
+(defn rectangle-lr-point
+  [{:keys [row-index row-item-index lon-per-pix lat-per-pix]}]
+  {:lon (util/normalize-longitude (* (inc row-item-index) lon-per-pix))
+   :lat (util/normalize-latitude (* row-index lat-per-pix))})
+
+(defn rectangle-ll-point
+  [{:keys [row-index row-item-index lon-per-pix lat-per-pix]}]
+  {:lon (util/normalize-longitude (* row-item-index lon-per-pix))
+   :lat (util/normalize-latitude (* row-index lat-per-pix))})
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Support Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn geodesic-triangle-north
   "Starting at the pole, all of the initial points for all of the triangles
@@ -49,28 +81,25 @@
 
   Finally, we follow GIS convention and indicate a closed polygon by adding an
   additional point: the last point is the same as the first."
-  [{:keys [row-item-index lon-per-pix lat-per-pix]}]
-  (let [first-point triangle-north-point
-        second-point (triagnle-lr-point
-                      row-item-index lon-per-pix lat-per-pix 90)
-        third-point (triagnle-ll-point
-                     row-item-index lon-per-pix lat-per-pix 90)]
-    [first-point second-point third-point first-point]))
+  [opts]
+  (let [second-point (triangle-base-r-point opts 90)
+        third-point (triangle-base-l-point opts 90)]
+    [triangle-north-point
+     second-point
+     third-point
+     triangle-north-point]))
 
 (defn geodesic-triangle-south
   "This function embodies the the same logic as its north pole counterpart;
   see the docstring of `geodesic-triangle-north` for more details."
-  [{:keys [row-item-index lon-per-pix lat-per-pix]}]
-  (let [first-point (triagnle-ll-point row-item-index
-                                         lon-per-pix
-                                         (* -1 lat-per-pix)
-                                         -90)
-        second-point (triagnle-lr-point row-item-index
-                                          lon-per-pix
-                                          (* -1 lat-per-pix)
-                                          -90)
-        third-point triangle-south-point]
-    [first-point second-point third-point first-point]))
+  [{:keys [lat-per-pix] :as opts}]
+  (let [first-point (triangle-base-l-point opts
+                                           (* -1 lat-per-pix)
+                                           -90)
+        second-point (triangle-base-r-point opts
+                                            (* -1 lat-per-pix)
+                                            -90)]
+    [first-point second-point triangle-south-point first-point]))
 
 (defn center-north-triangle
   "We just need a rough approximation here, to get a point somewhere away from
@@ -89,19 +118,36 @@
          (- (* (inc row-item-index) lon-per-pix) (/ lon-per-pix 2)))})
 
 (defn geodesic-rectangle
-  "TBD
+  "Provide a polygon of points representing a geodesic rectangle on a globe
+  being computed from a pixel map, where each pixel is being transformed into
+  a geodesic rectangle. The ordering of points in the rectangle starts at the
+  upper-left and goes in a clock-wise manner.
 
   Note that `row-item-index` is the zero-based index for the array of in the
   x-direction (in other words, the index for a given element in the list of
   items for a row collection). Conversely, the row-index represents which row
   is currently being processed, thus giving us a value for the current,
   relative place in the y-direction."
-  [{:keys [row-item-index row-index lon-per-pix lat-per-pix]}]
-  :not-implemented)
+  [opts]
+  (let [first-point (rectangle-ul-point opts)]
+    [first-point
+     (rectangle-ur-point opts)
+     (rectangle-lr-point opts)
+     (rectangle-ll-point opts)
+     first-point]))
 
 (defn center-rectangle
-  [{:keys [row-item-index row-index lon-per-pix lat-per-pix]}]
-  :not-implemented)
+  [opts]
+  ;; Note that the lat/lon here don't need to be normalized, since they are
+  ;; pulled from values that have already been normalized.
+  (let [ll (rectangle-ll-point opts)
+        ur (rectangle-ur-point opts)]
+    {:lon (+ (/ (- (:lon ur) (:lon ll)) 2) (:lon ll))
+     :lat (+ (/ (- (:lat ur) (:lat ll)) 2) (:lat ll))}))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn polygon
   [coords {:keys [first? last?] :as opts}]
