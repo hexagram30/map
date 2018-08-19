@@ -171,7 +171,9 @@
 
 (defn pixels-per-lat-degree
   [system]
-  (/ (y-pixels system) 2.0 (latitude-circles system)))
+  (/ (- (ending-row system) (starting-row system))
+     2.0
+     (latitude-circles system)))
 
 (defn lat-minutes-per-pixel
   [system]
