@@ -175,7 +175,7 @@
   (let [coords (:coords pixel-bands)
         sea? (config/sea? system (:ls pixel-bands))
         altitude (config/altitude-lookup system (:altitude pixel-bands))
-        depth (if sea? altitude nil)]
+        depth (when sea? altitude)]
     (map->Tile
       {:altitude (if sea? nil altitude)
        :biome (biome-check system pixel-bands sea? depth)
