@@ -13,6 +13,7 @@
     [hxgm30.map.components.layers :as layers]
     [hxgm30.map.io :as map-io]
     [hxgm30.map.row :as row]
+    [hxgm30.map.tile :as tile]
     [hxgm30.map.util :as util]
     [trifl.java :refer [show-methods]])
   (:import
