@@ -61,6 +61,15 @@
   {:lon (util/normalize-longitude (* row-item-index lon-per-pix))
    :lat (util/normalize-latitude (* row-index lat-per-pix))})
 
+(defn biome-check
+  [system pixel-bands sea? depth]
+  (let [biome (config/biome-lookup system (:biome pixel-bands))]
+    (if (and (nil? biome) sea?)
+      (if (>= depth -1000)
+        :coastal-waters
+        :open-ocean)
+      biome)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Support Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -165,12 +174,13 @@
   [system pixel-bands opts]
   (let [coords (:coords pixel-bands)
         sea? (config/sea? system (:ls pixel-bands))
-        altitude (config/altitude-lookup system (:altitude pixel-bands))]
+        altitude (config/altitude-lookup system (:altitude pixel-bands))
+        depth (if sea? altitude nil)]
     (map->Tile
       {:altitude (if sea? nil altitude)
-       :biome (config/biome-lookup system (:biome pixel-bands))
+       :biome (biome-check system pixel-bands sea? depth)
        :center (center-polygon coords opts)
-       :depth (if sea? altitude nil)
+       :depth depth
        :ice? (config/ice? system (:lsi pixel-bands))
        :land? (config/land? system (:ls pixel-bands))
        :sea? sea?
