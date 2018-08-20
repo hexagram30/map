@@ -25,7 +25,7 @@
 
 (defn all-bands
   ([system]
-    (all-bands system [0 0]))
+    (all-bands system [0 (config/starting-row system)]))
   ([system [x-start y-start]]
     (->> (for [y (util/ys system y-start)
                x (util/xs system x-start)]
