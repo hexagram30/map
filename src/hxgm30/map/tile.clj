@@ -188,7 +188,7 @@
        :polygon (polygon coords opts)})))
 
 (defn row->tiles
-  [system row row-index]
+  [system row]
   (let [lat-per-pix (util/lat-degrees-per-pixel system)
         lon-per-pix (util/lon-degrees-per-pixel row)
         first? (row/first? system row)
@@ -196,9 +196,18 @@
     (->> row
          :data
          (map-indexed vector)
-         (map #(bands->tile system %2 {:row-item-index %1
-                                       :row-index row-index
+         (map #(bands->tile system (second %) {:row-item-index (first %)
+                                       :row-index (:index row)
                                        :first? first?
                                        :last? last?
                                        :lat-per-pix lat-per-pix
                                        :lon-per-pix lon-per-pix})))))
+
+(defn rows->tiles
+  ([system]
+    (rows->tiles system (config/starting-row system)))
+  ([system y-start]
+    (rows->tiles system y-start (config/ending-row system)))
+  ([system y-start y-end]
+    (map #(row->tiles system (row/create system %))
+         (range y-start (inc y-end)))))
