@@ -206,6 +206,372 @@
                                               :lon-per-pix lon-per-pix
                                               :lat-per-pix lat-per-pix})))))
 
+(deftest bands->tile-above-equator
+  (let [sys (system)
+        current-row 514
+        row-item-index 1
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon 0.3375, :lat 0.21929824561404132}
+                           :depth -11000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 1 :y 514}
+                           :polygon [{:lon 0.225 :lat 0.33082706766917624}
+                                     {:lon 0.45 :lat 0.33082706766917624}
+                                     {:lon 0.45 :lat 0.1077694235589064}
+                                     {:lon 0.225 :lat 0.1077694235589064}
+                                     {:lon 0.225 :lat 0.33082706766917624}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix}))))
+  (let [sys (system)
+        current-row 514
+        row-item-index 2
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon 0.5625 :lat 0.21929824561404132}
+                           :depth -10000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 2 :y 514}
+                           :polygon [{:lon 0.45 :lat 0.33082706766917624}
+                                     {:lon 0.675 :lat 0.33082706766917624}
+                                     {:lon 0.675 :lat 0.1077694235589064}
+                                     {:lon 0.45 :lat 0.1077694235589064}
+                                     {:lon 0.45 :lat 0.33082706766917624}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix}))))
+  (let [sys (system)
+        current-row 514
+        row-item-index 800
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon 0.11250000000001137 :lat 0.21929824561404132}
+                           :depth -9000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 800 :y 514}
+                           :polygon [{:lon 180.0 :lat 0.33082706766917624}
+                                     {:lon -179.775 :lat 0.33082706766917624}
+                                     {:lon -179.775 :lat 0.1077694235589064}
+                                     {:lon 180.0 :lat 0.1077694235589064}
+                                     {:lon 180.0 :lat 0.33082706766917624}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix}))))
+  (let [sys (system)
+        current-row 514
+        row-item-index 1599
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon -0.11249999999998295 :lat 0.21929824561404132}
+                           :depth -12000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 1599 :y 514}
+                           :polygon [{:lon -0.2249999999999659 :lat 0.33082706766917624}
+                                     {:lon 0.0 :lat 0.33082706766917624}
+                                     {:lon 0.0 :lat 0.1077694235589064}
+                                     {:lon -0.2249999999999659 :lat 0.1077694235589064}
+                                     {:lon -0.2249999999999659 :lat 0.33082706766917624}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix})))))
+
+(deftest bands->tile-equator
+  (let [sys (system)
+        current-row 515
+        row-item-index 1
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon 0.3375 :lat -0.003759398496235633}
+                           :depth -10000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 1 :y 515}
+                           :polygon [{:lon 0.225 :lat 0.1077694235589064}
+                                     {:lon 0.45 :lat 0.1077694235589064}
+                                     {:lon 0.45 :lat -0.11528822055137766}
+                                     {:lon 0.225 :lat -0.11528822055137766}
+                                     {:lon 0.225 :lat 0.1077694235589064}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix}))))
+  (let [sys (system)
+        current-row 515
+        row-item-index 2
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon 0.5625 :lat -0.003759398496235633}
+                           :depth -10000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 2 :y 515}
+                           :polygon [{:lon 0.45 :lat 0.1077694235589064}
+                                     {:lon 0.675 :lat 0.1077694235589064}
+                                     {:lon 0.675 :lat -0.11528822055137766}
+                                     {:lon 0.45 :lat -0.11528822055137766}
+                                     {:lon 0.45 :lat 0.1077694235589064}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix}))))
+  (let [sys (system)
+        current-row 515
+        row-item-index 800
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon 0.11250000000001137 :lat -0.003759398496235633}
+                           :depth -9000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 800 :y 515}
+                           :polygon [{:lon 180.0 :lat 0.1077694235589064}
+                                     {:lon -179.775 :lat 0.1077694235589064}
+                                     {:lon -179.775 :lat -0.11528822055137766}
+                                     {:lon 180.0 :lat -0.11528822055137766}
+                                     {:lon 180.0 :lat 0.1077694235589064}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix}))))
+  (let [sys (system)
+        current-row 515
+        row-item-index 1599
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon -0.11249999999998295 :lat -0.003759398496235633}
+                           :depth -10000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 1599 :y 515}
+                           :polygon [{:lon -0.2249999999999659 :lat 0.1077694235589064}
+                                     {:lon 0.0 :lat 0.1077694235589064}
+                                     {:lon 0.0 :lat -0.11528822055137766}
+                                     {:lon -0.2249999999999659 :lat -0.11528822055137766}
+                                     {:lon -0.2249999999999659 :lat 0.1077694235589064}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix})))))
+
+(deftest bands->tile-below-equator
+  (let [sys (system)
+        current-row 516
+        row-item-index 1
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon 0.3375 :lat -0.2268170426065126}
+                           :depth -9000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 1 :y 516}
+                           :polygon [{:lon 0.225 :lat -0.11528822055137766}
+                                     {:lon 0.45 :lat -0.11528822055137766}
+                                     {:lon 0.45 :lat -0.3383458646616475}
+                                     {:lon 0.225 :lat -0.3383458646616475}
+                                     {:lon 0.225       :lat -0.11528822055137766}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix}))))
+  (let [sys (system)
+        current-row 516
+        row-item-index 2
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon 0.5625 :lat -0.2268170426065126}
+                           :depth -10000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 2 :y 516}
+                           :polygon [{:lon 0.45 :lat -0.11528822055137766}
+                                     {:lon 0.675 :lat -0.11528822055137766}
+                                     {:lon 0.675 :lat -0.3383458646616475}
+                                     {:lon 0.45 :lat -0.3383458646616475}
+                                     {:lon 0.45 :lat -0.11528822055137766}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix}))))
+  (let [sys (system)
+        current-row 516
+        row-item-index 800
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon 0.11250000000001137 :lat -0.2268170426065126}
+                           :depth -9000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 800 :y 516}
+                           :polygon [{:lon 180.0 :lat -0.11528822055137766}
+                                     {:lon -179.775 :lat -0.11528822055137766}
+                                     {:lon -179.775 :lat -0.3383458646616475}
+                                     {:lon 180.0 :lat -0.3383458646616475}
+                                     {:lon 180.0 :lat -0.11528822055137766}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix}))))
+  (let [sys (system)
+        current-row 516
+        row-item-index 1599
+        row (row/create (system) current-row)
+        row-index (- current-row (config/starting-row sys))
+        pixel-bands (nth (:data row) row-item-index)
+        lat-per-pix (util/lat-degrees-per-pixel sys)
+        lon-per-pix (util/lon-degrees-per-pixel row)]
+    (is (not (row/first? sys row)))
+    (is (not (row/last? sys row)))
+    (is (= 1600 (count (:data row))))
+    (is (= (tile/map->Tile{:altitude nil
+                           :biome :open-ocean
+                           :center {:lon -0.11249999999998295 :lat -0.2268170426065126}
+                           :depth -10000
+                           :land? false
+                           :sea? true
+                           :ice? false
+                           :pixel {:x 1599 :y 516}
+                           :polygon [{:lon -0.2249999999999659 :lat -0.11528822055137766}
+                                     {:lon 0.0 :lat -0.11528822055137766}
+                                     {:lon 0.0 :lat -0.3383458646616475}
+                                     {:lon -0.2249999999999659 :lat -0.3383458646616475}
+                                     {:lon -0.2249999999999659 :lat -0.11528822055137766}]})
+           (tile/bands->tile sys pixel-bands {:row-index row-index
+                                              :row-item-index row-item-index
+                                              :first? (row/first? sys row)
+                                              :last? (row/last? sys row)
+                                              :lon-per-pix lon-per-pix
+                                              :lat-per-pix lat-per-pix})))))
+
 (deftest bands->tile-low-lat
   (let [sys (system)
         current-row 908
