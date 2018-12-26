@@ -197,11 +197,11 @@
          :data
          (map-indexed vector)
          (map #(bands->tile system (second %) {:row-item-index (first %)
-                                       :row-index (:index row)
-                                       :first? first?
-                                       :last? last?
-                                       :lat-per-pix lat-per-pix
-                                       :lon-per-pix lon-per-pix})))))
+                                               :row-index (:index row)
+                                               :first? first?
+                                               :last? last?
+                                               :lat-per-pix lat-per-pix
+                                               :lon-per-pix lon-per-pix})))))
 
 (defn rows->tiles
   ([system]
