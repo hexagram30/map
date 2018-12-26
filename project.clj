@@ -86,5 +86,6 @@
       ["check-vers"]
       ["lint"]
       ["ltest" ":all"]
+      ["ubercompile"]
       ["uberjar"]]})
 
