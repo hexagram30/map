@@ -1,6 +1,6 @@
 # hexagram30/map
 
-*A map-making library for use by hexagram30 projects*
+*A map-making library for worlds, cities, dungeons, and buildings in hexagram30 projects*
 
 [![][logo]][logo-large]
 
