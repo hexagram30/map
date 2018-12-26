@@ -16,7 +16,7 @@
        "\u001B[35m]\u001B[33m λ\u001B[m=> "))
 
 (defproject hexagram30/map "0.1.0-SNAPSHOT"
-  :description "A map-making library for use by hexagram30 projects"
+  :description "A map-making library for worlds, cities, dungeons, and buildings in hexagram30 projects"
   :url "https://github.com/hexagram30/map"
   :license {
     :name "Apache License, Version 2.0"
