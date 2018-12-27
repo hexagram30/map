@@ -15,6 +15,7 @@
     [hxgm30.map.row :as row]
     [hxgm30.map.tile :as tile]
     [hxgm30.map.util :as util]
+    [hxgm30.map.voronoi :as voronoi]
     [trifl.java :refer [show-methods]])
   (:import
     (javax.imageio ImageIO)
@@ -60,5 +61,8 @@
 
 
 (comment
-
+  (def filename "001-mercator-bump-black-sea-crop-small")
+  (def i (map-io/read-planet filename))
+  (def d (map-io/data i))
   )
+

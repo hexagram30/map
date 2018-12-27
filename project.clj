@@ -25,7 +25,9 @@
     [clojusc/system-manager "0.3.0"]
     [clojusc/twig "0.4.0"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
-    [org.clojure/clojure "1.10.0"]]
+    [org.clojure/clojure "1.10.0"]
+    [trystan/delaunay-triangulation "1.0.1"]
+    [trystan/voronoi-diagram "1.0.0"]]
   :profiles {
     :ubercompile {
       :aot :all}

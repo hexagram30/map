@@ -24,15 +24,20 @@ docker run hexagram30/planet -w $MACHINE_RES_X -h $MACHINE_RES_Y -pS -C LandSea.
     > resources/planets/001-sinusoidal-lsi.bmp
 
 
-## World mages to be viewed by humans
+## World images to be viewed by humans
 docker run hexagram30/planet -w $HUMAN_RES_X -h $HUMAN_RES_Y -pm -C Biomes.col -c \
     > resources/planets/001-mercator-biomes.bmp
 
 docker run hexagram30/planet -w $HUMAN_RES_X -h $HUMAN_RES_Y -pm -C Altitude.col \
     > resources/planets/001-mercator-altitude.bmp
 
+docker run hexagram30/planet -w $HUMAN_RES_X -h $HUMAN_RES_Y -pm -C greyscale.col \
+    > resources/planets/001-mercator-bump.bmp
 
-## Starting zone mages to be viewed by humans
+docker run hexagram30/planet -w $HUMAN_RES_X -h $HUMAN_RES_Y -pm -C LandSea.col -c \
+    > resources/planets/001-mercator-lsi.bmp
+
+## Starting zone images to be viewed by humans
 docker run hexagram30/planet -w $HUMAN_RES_X -h $HUMAN_RES_Y -pa -C Altitude.col \
     -l 330 -L 15 -m 2.3 \
     > resources/planets/001-startzone-altitude.bmp
