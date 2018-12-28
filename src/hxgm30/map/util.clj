@@ -1,7 +1,10 @@
 (ns hxgm30.map.util
   (:require
+    [clojure.walk :refer [postwalk]]
     [hxgm30.map.components.config :as config]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log])
+  (:import
+    (java.awt.image BufferedImage)))
 
 (defn lat-degrees-per-pixel
   [system]
@@ -72,3 +75,24 @@
   #(if (= % 90)
          0
          (- 90 %)))
+
+(defn rand-point
+  [max-x max-y]
+  [(rand-int (inc max-x))
+   (rand-int (inc max-y))])
+
+(defn rand-points
+  ([^BufferedImage image point-count]
+    (rand-points (.getWidth image)
+                 (.getHeight image)
+                 point-count))
+  ([width height point-count]
+    (map (fn [_] (rand-point width height)) (range (inc point-count)))))
+
+(defn- -round-nested
+  [data]
+  (if (or (float? data) (double? data))
+    (Math/round data)
+    data))
+
+(def round-nested #(postwalk -round-nested %))
