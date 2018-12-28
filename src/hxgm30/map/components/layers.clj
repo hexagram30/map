@@ -38,25 +38,29 @@
 (defn start
   [this]
   (log/info "Starting map layers component ...")
-  (log/debug "Started map layers component.")
-  (assoc this :maps {:altitude (map-io/read-planet (config/altitude-map this))
-                     :biomes (map-io/read-planet (config/biomes-map this))
-                     :ls (map-io/read-planet (config/land-sea-map this))
-                     :lsi (map-io/read-planet (config/land-sea-ice-map this))}))
+  (let [planet map-io/read-planet
+        component (assoc this
+                         :maps
+                         {:altitude (planet (config/altitude-map this))
+                          :biomes (planet (config/biomes-map this))
+                          :ls (planet (config/land-sea-map this))
+                          :lsi (planet (config/land-sea-ice-map this))})]
+    (log/debug "Started map layers component.")
+    component))
 
 (defn stop
   [this]
   (log/info "Stopping map layers component ...")
   (log/debug "Stopped map layers component.")
-  (dissoc this :altitude :biomes :ls :lsi))
+  (assoc this :maps nil))
 
 (def lifecycle-behaviour
   {:start start
    :stop stop})
 
 (extend Layers
-  component/Lifecycle
-  lifecycle-behaviour)
+        component/Lifecycle
+        lifecycle-behaviour)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Constructor   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
