@@ -70,6 +70,7 @@
     between 0 and 100.")
   (data [this]
     "Returns the image as one large tile.")
+  (draw-line! [this points color])
   (draw-polygon! [this points color])
   (fill-polygon! [this points color])
   (graphics [this])
@@ -109,6 +110,12 @@
       :green (bit-and (bit-shift-right values 8) 0x000000ff)
       :blue (bit-and values 0x000000ff))))
 
+(defn -draw-line
+  [this [[x1 y1] [x2 y2]] color]
+  (let [g (graphics this)]
+    (.setColor g (if (keyword? color) (color colors) (components->color color)))
+    (.drawLine g x1 y1 x2 y2)))
+
 (defn -draw-polygon
   [this points color]
   (let [g (graphics this)]
@@ -129,6 +136,7 @@
   {:band -band
    :band-percent #(* (/ (band %1 %2 %3 %4) 255.0) 100)
    :data #(.getData %)
+   :draw-line! -draw-line
    :draw-polygon! -draw-polygon
    :fill-polygon! -fill-polygon
    :graphics #(.getGraphics %)
