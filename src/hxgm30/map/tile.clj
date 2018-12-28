@@ -177,7 +177,7 @@
         altitude (config/altitude-lookup system (:altitude pixel-bands))
         depth (when sea? altitude)]
     (map->Tile
-      {:altitude (if sea? nil altitude)
+      {:altitude (when-not sea? altitude)
        :biome (biome-check system pixel-bands sea? depth)
        :center (center-polygon coords opts)
        :depth depth
