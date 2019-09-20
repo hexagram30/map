@@ -13,6 +13,7 @@
     [hxgm30.map.components.layers :as layers]
     [hxgm30.map.io :as map-io]
     [hxgm30.map.row :as row]
+    [hxgm30.map.scales :as scales]
     [hxgm30.map.tile :as tile]
     [hxgm30.map.util :as util]
     [hxgm30.map.voronoi :as voronoi]
@@ -65,4 +66,3 @@
   (def i (map-io/read-planet filename))
   (def d (map-io/data i))
   )
-

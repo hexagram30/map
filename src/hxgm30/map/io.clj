@@ -31,8 +31,17 @@
   ([cs alpha]
    (new Color (:red cs) (:green cs) (:blue cs) alpha)))
 
-(def file-format
+(def bmp-format
   "planets/%s.bmp")
+
+(def png-format
+  "planets/%s.png")
+
+(defn read-resource-image
+  [path]
+  (->> path
+       io/resource
+       (ImageIO/read)))
 
 (defn read-planet
   "Given a string value for a planet's .bmp file (without the .bmp extension)
@@ -40,9 +49,8 @@
   `java.awt.image.BufferedImage`."
   [filename]
   (->> filename
-       (format file-format)
-       io/resource
-       (ImageIO/read)))
+       (format bmp-format)
+       read-resource-image))
 
 (defprotocol SizedAPI
   (height [this])
