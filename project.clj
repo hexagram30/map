@@ -21,11 +21,20 @@
   :license {
     :name "Apache License, Version 2.0"
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
+  :exclusions [
+    ;; JDK version issues overrides
+    [org.clojure/clojure]
+    [org.clojure/core.rrb-vector]
+    [org.clojure/tools.reader]]
   :dependencies [
+    ;; JDK version issues overrides
+    [org.clojure/core.rrb-vector "0.0.14"]
+    [org.clojure/tools.reader "1.3.2"]
+    ;; Regular dependencies
     [clojusc/system-manager "0.3.0"]
-    [clojusc/twig "0.4.0"]
+    [clojusc/twig "0.4.1"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
-    [org.clojure/clojure "1.10.0"]
+    [org.clojure/clojure "1.10.1"]
     [trystan/delaunay-triangulation "1.0.1"]
     [trystan/voronoi-diagram "1.0.0"]]
   :profiles {
@@ -34,10 +43,10 @@
     :dev {
       :dependencies [
         [clojusc/trifl "0.4.2"]
-        [org.clojure/tools.namespace "0.2.11"]]
+        [org.clojure/tools.namespace "0.3.1"]]
       :plugins [
         [lein-shell "0.5.0"]
-        [venantius/ultra "0.5.2"]]
+        [venantius/ultra "0.6.0"]]
       :source-paths ["dev-resources/src"]
       :repl-options {
         :init-ns hxgm30.map.repl
@@ -47,10 +56,10 @@
       :source-paths ^:replace ["src"]
       :test-paths ^:replace []
       :plugins [
-        [jonase/eastwood "0.3.4"]
+        [jonase/eastwood "0.3.6"]
         [lein-ancient "0.6.15"]
-        [lein-kibit "0.1.6"]
-        [venantius/yagni "0.1.7"]]}
+        [lein-kibit "0.1.7"]
+        [lein-nvd "1.3.0"]]}
     :test {
       :plugins [
         [lein-ltest "0.3.0"]]
@@ -90,4 +99,3 @@
       ["ltest" ":all"]
       ["ubercompile"]
       ["uberjar"]]})
-
