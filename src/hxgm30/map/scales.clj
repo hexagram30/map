@@ -36,20 +36,17 @@
 (def temperature (read-scale temperature-file))
 (def precipitation (read-scale precipitation-file))
 
-(defn elevation-colors
-  ""
-  []
-  (scale-colors elevation))
+(def elevation-colors
+  (memoize
+    (fn [] (scale-colors elevation))))
 
-(defn temperature-colors
-  ""
-  []
-  (scale-colors temperature))
+(def temperature-colors
+  (memoize
+    (fn [] (scale-colors temperature))))
 
-(defn precipitation-colors
-  ""
-  []
-  (scale-colors precipitation))
+(def precipitation-colors
+  (memoize
+    (fn [] (scale-colors precipitation))))
 
 (def meters-per-grade (float (/ (- max-elevation min-elevation)
                                 (dec (map-io/height elevation)))))
@@ -81,35 +78,35 @@
   []
   (get-ranges min-precipitation max-precipitation mmyr-per-grade))
 
-(defn elevation-lookup
-  ""
-  []
-  (->> (elevation-colors)
-       reverse
-       (interleave (elevation-ranges))
-       (partition 2)
-       (map vec)
-       (into {})))
+(def elevation-lookup
+  (memoize
+    (fn []
+      (->> (elevation-colors)
+           reverse
+           (interleave (elevation-ranges))
+           (partition 2)
+           (map vec)
+           (into {})))))
 
-(defn temperature-lookup
-  ""
-  []
-  (->> (temperature-colors)
-       reverse
-       (interleave (temperature-ranges))
-       (partition 2)
-       (map vec)
-       (into {})))
+(def temperature-lookup
+  (memoize
+    (fn []
+      (->> (temperature-colors)
+           reverse
+           (interleave (temperature-ranges))
+           (partition 2)
+           (map vec)
+           (into {})))))
 
-(defn precipitation-lookup
-  ""
-  []
-  (->> (precipitation-colors)
-       reverse
-       (interleave (precipitation-ranges))
-       (partition 2)
-       (map vec)
-       (into {})))
+(def precipitation-lookup
+  (memoize
+    (fn []
+      (->> (precipitation-colors)
+           reverse
+           (interleave (precipitation-ranges))
+           (partition 2)
+           (map vec)
+           (into {})))))
 
 (defn find-range
   [item collection]
