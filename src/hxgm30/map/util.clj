@@ -1,5 +1,6 @@
 (ns hxgm30.map.util
   (:require
+    [clojure.string :as string]
     [clojure.walk :refer [postwalk]]
     [hxgm30.map.components.config :as config]
     [taoensso.timbre :as log])
@@ -44,6 +45,33 @@
     (xs system 0))
   ([system x-start]
     (range x-start (config/x-pixels system))))
+
+(defn hex->rgb
+  ""
+  [color]
+  (let [components (last (string/split color #"#"))]
+    (map #(new BigInteger (apply str %) 16)
+         (partition 2 components))))
+
+(defn hex->color-map
+  ""
+  [color]
+  (let [components (hex->rgb color)]
+    {:red (nth components 0)
+     :green (nth components 1)
+     :blue (nth components 2)}))
+
+(defn color-map->ansi
+  ([color-map]
+    (color-map->ansi color-map "███████"))
+  ([color-map text]
+    (str \u001b "[38;2;"
+         (format "%s;%s;%sm%s"
+                 (:red color-map)
+                 (:green color-map)
+                 (:blue color-map)
+                 text)
+         \u001b "[0m")))
 
 (defn color-map->hex
   [color-map]

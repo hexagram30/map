@@ -7,18 +7,18 @@
   (:import
     (java.awt.image BufferedImage)))
 
-(def min-elevation 0) ; in meters
-(def max-elevation 30000) ; in meters
-(def min-temperature 212) ; in degrees C/K
-(def max-temperature 333) ; in degrees C/K
-(def min-precipitation 0) ; in mm/year
-(def max-precipitation 4500) ; in mm/year
+(def elevation-min 0) ; in meters
+(def elevation-max 30000) ; in meters
+(def temperature-min 212) ; in degrees C/K
+(def temperature-max 333) ; in degrees C/K
+(def precipitation-min 0) ; in mm/year
+(def precipitation-max 4500) ; in mm/year
 
-(def elevation-file "001-mercator-elevation-scale")
+(def elevation-file "001-mercator-elevation-scale-hex")
 (def temperature-file "001-mercator-temperature-scale")
 (def precipitation-file "001-mercator-precipitation-scale")
 
-(defn read-scale
+(defn read-scale-img
   "Image files are read from the top-down, so high elevations and high numbers
   will be first."
   [filename]
@@ -26,35 +26,47 @@
        (format map-io/png-format)
        map-io/read-resource-image))
 
-(defn scale-colors
+(defn read-scale-txt
+  ""
+  [filename]
+  (->> filename
+       (format map-io/palette-format)
+       map-io/read-resource-text))
+
+(defn scale-colors-img
   ""
   [^BufferedImage im]
   (let [middle (int (/ (map-io/width im) 2))]
     (map #(map-io/bands im middle %) (range (map-io/height im)))))
 
-(def elevation (read-scale elevation-file))
-(def temperature (read-scale temperature-file))
-(def precipitation (read-scale precipitation-file))
+(defn scale-colors-txt
+  ""
+  [lines]
+  (map util/hex->color-map lines))
+
+(def elevation (read-scale-txt elevation-file))
+(def temperature (read-scale-img temperature-file))
+(def precipitation (read-scale-img precipitation-file))
 
 (def elevation-colors
   (memoize
-    (fn [] (scale-colors elevation))))
+    (fn [] (scale-colors-txt elevation))))
 
 (def temperature-colors
   (memoize
-    (fn [] (scale-colors temperature))))
+    (fn [] (scale-colors-img temperature))))
 
 (def precipitation-colors
   (memoize
-    (fn [] (scale-colors precipitation))))
+    (fn [] (scale-colors-img precipitation))))
 
-(def meters-per-grade (float (/ (- max-elevation min-elevation)
-                                (dec (map-io/height elevation)))))
+(def meters-per-grade (float (/ (- elevation-max elevation-min)
+                                (dec (count (elevation-colors))))))
 
-(def degrees-per-grade (float (/ (- max-temperature min-temperature)
+(def degrees-per-grade (float (/ (- temperature-max temperature-min)
                                  (dec (map-io/height temperature)))))
 
-(def mmyr-per-grade (float (/ (- max-precipitation min-precipitation)
+(def mmyr-per-grade (float (/ (- precipitation-max precipitation-min)
                                  (dec (map-io/height precipitation)))))
 
 (defn get-ranges
@@ -66,23 +78,22 @@
 (defn elevation-ranges
   ""
   []
-  (get-ranges min-elevation max-elevation meters-per-grade))
+  (get-ranges elevation-min elevation-max meters-per-grade))
 
 (defn temperature-ranges
   ""
   []
-  (get-ranges min-temperature max-temperature degrees-per-grade))
+  (get-ranges temperature-min temperature-max degrees-per-grade))
 
 (defn precipitation-ranges
   ""
   []
-  (get-ranges min-precipitation max-precipitation mmyr-per-grade))
+  (get-ranges precipitation-min precipitation-max mmyr-per-grade))
 
 (def elevation-lookup
   (memoize
     (fn []
       (->> (elevation-colors)
-           reverse
            (interleave (elevation-ranges))
            (partition 2)
            (map vec)
@@ -137,3 +148,10 @@
 (defn precipitation-color
   [mmyr]
   (get (precipitation-lookup) (find-precipitation-range mmyr)))
+
+(defn print-elevation-colors
+  [start stop step]
+  (mapv
+    #(println (str (format "%,-6dm : " %) (util/color-map->ansi (elevation-color %))))
+    (range start (+ stop step) step))
+  :ok)

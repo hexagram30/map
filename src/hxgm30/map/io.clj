@@ -37,11 +37,21 @@
 (def png-format
   "planets/%s.png")
 
+(def palette-format
+  "planets/%s.txt")
+
 (defn read-resource-image
   [path]
-  (->> path
-       io/resource
-       (ImageIO/read)))
+  (-> path
+      io/resource
+      (ImageIO/read)))
+
+(defn read-resource-text
+  [path]
+  (-> path
+      io/resource
+      io/reader
+      line-seq))
 
 (defn read-planet
   "Given a string value for a planet's .bmp file (without the .bmp extension)
