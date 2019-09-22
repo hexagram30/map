@@ -11,9 +11,12 @@
 (def max-elevation 30000) ; in meters
 (def min-temperature 212) ; in degrees C/K
 (def max-temperature 333) ; in degrees C/K
+(def min-precipitation 0) ; in mm/year
+(def max-precipitation 4500) ; in mm/year
 
 (def elevation-file "001-mercator-elevation-scale")
 (def temperature-file "001-mercator-temperature-scale")
+(def precipitation-file "001-mercator-precipitation-scale")
 
 (defn read-scale
   "Image files are read from the top-down, so high elevations and high numbers
@@ -31,6 +34,7 @@
 
 (def elevation (read-scale elevation-file))
 (def temperature (read-scale temperature-file))
+(def precipitation (read-scale precipitation-file))
 
 (defn elevation-colors
   ""
@@ -42,11 +46,19 @@
   []
   (scale-colors temperature))
 
+(defn precipitation-colors
+  ""
+  []
+  (scale-colors precipitation))
+
 (def meters-per-grade (float (/ (- max-elevation min-elevation)
                                 (dec (map-io/height elevation)))))
 
 (def degrees-per-grade (float (/ (- max-temperature min-temperature)
                                  (dec (map-io/height temperature)))))
+
+(def mmyr-per-grade (float (/ (- max-precipitation min-precipitation)
+                                 (dec (map-io/height precipitation)))))
 
 (defn get-ranges
   ""
@@ -63,6 +75,11 @@
   ""
   []
   (get-ranges min-temperature max-temperature degrees-per-grade))
+
+(defn precipitation-ranges
+  ""
+  []
+  (get-ranges min-precipitation max-precipitation mmyr-per-grade))
 
 (defn elevation-lookup
   ""
@@ -84,6 +101,16 @@
        (map vec)
        (into {})))
 
+(defn precipitation-lookup
+  ""
+  []
+  (->> (precipitation-colors)
+       reverse
+       (interleave (precipitation-ranges))
+       (partition 2)
+       (map vec)
+       (into {})))
+
 (defn find-range
   [item collection]
   (reduce (fn [_ [a b]] (when (<= a item b) (reduced [a b])))
@@ -98,6 +125,10 @@
   [kelvin]
   (find-range kelvin (temperature-ranges)))
 
+(defn find-precipitation-range
+  [mmyr]
+  (find-range mmyr (precipitation-ranges)))
+
 (defn elevation-color
   [meters]
   (get (elevation-lookup) (find-elevation-range meters)))
@@ -105,3 +136,7 @@
 (defn temperature-color
   [kelvin]
   (get (temperature-lookup) (find-temperature-range kelvin)))
+
+(defn precipitation-color
+  [mmyr]
+  (get (precipitation-lookup) (find-precipitation-range mmyr)))
