@@ -16,7 +16,7 @@
 
 (def elevation-file "001-mercator-elevation-scale-hex")
 (def temperature-file "001-mercator-temperature-scale")
-(def precipitation-file "001-mercator-precipitation-scale")
+(def precipitation-file "001-mercator-precipitation-scale-hex")
 
 (defn read-scale-img
   "Image files are read from the top-down, so high elevations and high numbers
@@ -46,7 +46,7 @@
 
 (def elevation (read-scale-txt elevation-file))
 (def temperature (read-scale-img temperature-file))
-(def precipitation (read-scale-img precipitation-file))
+(def precipitation (read-scale-txt precipitation-file))
 
 (def elevation-colors
   (memoize
@@ -58,7 +58,7 @@
 
 (def precipitation-colors
   (memoize
-    (fn [] (scale-colors-img precipitation))))
+    (fn [] (scale-colors-txt precipitation))))
 
 (def meters-per-grade (float (/ (- elevation-max elevation-min)
                                 (dec (count (elevation-colors))))))
@@ -67,7 +67,7 @@
                                  (dec (map-io/height temperature)))))
 
 (def mmyr-per-grade (float (/ (- precipitation-max precipitation-min)
-                                 (dec (map-io/height precipitation)))))
+                                 (dec (count (precipitation-colors))))))
 
 (defn get-ranges
   ""
@@ -150,8 +150,21 @@
   (get (precipitation-lookup) (find-precipitation-range mmyr)))
 
 (defn print-elevation-colors
-  [start stop step]
-  (mapv
-    #(println (str (format "%,-6dm : " %) (util/color-map->ansi (elevation-color %))))
-    (range start (+ stop step) step))
-  :ok)
+  ([]
+    (print-elevation-colors elevation-min elevation-max 1000))
+  ([start stop step]
+    (mapv
+      #(println (str (format "%,-6dm : " %)
+                     (util/color-map->ansi (elevation-color %))))
+      (range start (+ stop step) step))
+    :ok))
+
+(defn print-precipitation-colors
+  ([]
+    (print-precipitation-colors precipitation-min precipitation-max 100))
+  ([start stop step]
+    (mapv
+      #(println (str (format "%,-12dmm/year : " %)
+                     (util/color-map->ansi (precipitation-color %))))
+      (range start (+ stop step) step))
+    :ok))
