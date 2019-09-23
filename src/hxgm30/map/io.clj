@@ -53,14 +53,25 @@
       io/reader
       line-seq))
 
-(defn read-planet
-  "Given a string value for a planet's .bmp file (without the .bmp extension)
-  read the file and load the image data. Note that ImageIO returns a
-  `java.awt.image.BufferedImage`."
+(defn read-png
+  "Read a .bmp file from the `resources/planets` directory."
+  [filename]
+  (->> filename
+       (format png-format)
+       read-resource-image))
+
+(defn read-bmp
+  "Read a .bmp file from the `resources/planets` directory."
   [filename]
   (->> filename
        (format bmp-format)
        read-resource-image))
+
+(def read-planet
+  "Given a string value for a planet's .bmp file (without the .bmp extension)
+  read the file and load the image data. Note that ImageIO returns a
+  `java.awt.image.BufferedImage`."
+  #'read-bmp)
 
 (defprotocol SizedAPI
   (height [this])
