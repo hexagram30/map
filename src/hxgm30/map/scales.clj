@@ -15,7 +15,7 @@
 (def precipitation-max 4500) ; in mm/year
 
 (def elevation-file "001-mercator-elevation-scale-hex")
-(def temperature-file "001-mercator-temperature-scale")
+(def temperature-file "001-mercator-temperature-scale-hex")
 (def precipitation-file "001-mercator-precipitation-scale-hex")
 
 (defn read-scale-img
@@ -45,7 +45,7 @@
   (map util/hex->color-map lines))
 
 (def elevation (read-scale-txt elevation-file))
-(def temperature (read-scale-img temperature-file))
+(def temperature (read-scale-txt temperature-file))
 (def precipitation (read-scale-txt precipitation-file))
 
 (def elevation-colors
@@ -54,7 +54,7 @@
 
 (def temperature-colors
   (memoize
-    (fn [] (scale-colors-img temperature))))
+    (fn [] (scale-colors-txt temperature))))
 
 (def precipitation-colors
   (memoize
@@ -64,7 +64,7 @@
                                 (dec (count (elevation-colors))))))
 
 (def degrees-per-grade (float (/ (- temperature-max temperature-min)
-                                 (dec (map-io/height temperature)))))
+                                 (dec (count (temperature-colors))))))
 
 (def mmyr-per-grade (float (/ (- precipitation-max precipitation-min)
                                  (dec (count (precipitation-colors))))))
@@ -159,9 +159,19 @@
       (range start (+ stop step) step))
     :ok))
 
+(defn print-temperature-colors
+  ([]
+    (print-temperature-colors temperature-min temperature-max 100))
+  ([start stop step]
+    (mapv
+      #(println (str (format "%,-3dK : " %)
+                     (util/color-map->ansi (temperature-color %))))
+      (range start (+ stop step) step))
+    :ok))
+
 (defn print-precipitation-colors
   ([]
-    (print-precipitation-colors precipitation-min precipitation-max 100))
+    (print-precipitation-colors precipitation-min precipitation-max 3))
   ([start stop step]
     (mapv
       #(println (str (format "%,-12dmm/year : " %)
