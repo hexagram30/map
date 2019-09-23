@@ -50,7 +50,7 @@
   ""
   [color]
   (let [components (last (string/split color #"#"))]
-    (map #(new BigInteger (apply str %) 16)
+    (map #(new BigInteger (string/join %) 16)
          (partition 2 components))))
 
 (defn hex->color-map
@@ -124,3 +124,7 @@
     data))
 
 (def round-nested #(postwalk -round-nested %))
+
+(defn mean
+  [values]
+  (Math/round (/ (reduce + values) (count values))))

@@ -1,18 +1,19 @@
 (ns hxgm30.map.scales
   (:require
     [clojure.java.io :as io]
+    [clojure.string :as string]
     [hxgm30.map.io :as map-io]
     [hxgm30.map.util :as util]
     [taoensso.timbre :as log])
   (:import
     (java.awt.image BufferedImage)))
 
-(def elevation-min 0) ; in meters
-(def elevation-max 30000) ; in meters
+(def elevation-min 0) ; in strides (~2 leagues or ~7 miles)
+(def elevation-max 16000) ; in strides (~2 leagues or ~7 miles)
 (def temperature-min 212) ; in degrees C/K
 (def temperature-max 333) ; in degrees C/K
-(def precipitation-min 0) ; in mm/year
-(def precipitation-max 4500) ; in mm/year
+(def precipitation-min 0) ; in mils/year (~4500 mm/yr)
+(def precipitation-max 177000) ; in mils/year, ~3400 mil/week (~4500 mm/yr)
 
 (def elevation-file "001-mercator-elevation-scale-hex")
 (def temperature-file "001-mercator-temperature-scale-hex")
@@ -90,33 +91,65 @@
   []
   (get-ranges precipitation-min precipitation-max mmyr-per-grade))
 
+(defn- -maybe-reverse
+  [opts data]
+  (if (:rev? opts)
+    (reverse data)
+    data))
+
+(defn lookup-grouping
+  ([x-colors x-ranges]
+    (lookup-grouping x-colors x-ranges {}))
+  ([x-colors x-ranges opts]
+    (->> x-colors
+         (-maybe-reverse opts)
+         (interleave x-ranges)
+         (partition 2))))
+
 (def elevation-lookup
   (memoize
     (fn []
-      (->> (elevation-colors)
-           (interleave (elevation-ranges))
-           (partition 2)
+      (->> (lookup-grouping (elevation-colors) (elevation-ranges))
            (map vec)
+           (into {})))))
+
+(def elevation-rev-lookup
+  (memoize
+    (fn []
+      (->> (lookup-grouping (elevation-colors) (elevation-ranges))
+           (map (comp vec reverse))
            (into {})))))
 
 (def temperature-lookup
   (memoize
     (fn []
-      (->> (temperature-colors)
-           reverse
-           (interleave (temperature-ranges))
-           (partition 2)
+      (->> (lookup-grouping
+             (temperature-colors) (temperature-ranges) {:rev? true})
            (map vec)
+           (into {})))))
+
+(def temperature-rev-lookup
+  (memoize
+    (fn []
+      (->> (lookup-grouping
+             (temperature-colors) (temperature-ranges) {:rev? true})
+           (map (comp vec reverse))
            (into {})))))
 
 (def precipitation-lookup
   (memoize
     (fn []
-      (->> (precipitation-colors)
-           reverse
-           (interleave (precipitation-ranges))
-           (partition 2)
+      (->> (lookup-grouping
+             (precipitation-colors) (precipitation-ranges) {:rev? true})
            (map vec)
+           (into {})))))
+
+(def precipitation-rev-lookup
+  (memoize
+    (fn []
+      (->> (lookup-grouping
+             (precipitation-colors) (precipitation-ranges) {:rev? true})
+           (map (comp vec reverse))
            (into {})))))
 
 (defn find-range
@@ -141,40 +174,55 @@
   [meters]
   (get (elevation-lookup) (find-elevation-range meters)))
 
+(defn elevation-amount
+  "Given an RGB color hashmap, return the corresponding elevation."
+  [color-map]
+  (util/mean (get (elevation-rev-lookup) color-map)))
+
 (defn temperature-color
   [kelvin]
   (get (temperature-lookup) (find-temperature-range kelvin)))
+
+(defn temperature-amount
+  "Given an RGB color hashmap, return the corresponding temperature."
+  [color-map]
+  (util/mean (get (temperature-rev-lookup) color-map)))
 
 (defn precipitation-color
   [mmyr]
   (get (precipitation-lookup) (find-precipitation-range mmyr)))
 
+(defn precipitation-amount
+  "Given an RGB color hashmap, return the corresponding annual precipitation."
+  [color-map]
+  (util/mean (get (precipitation-rev-lookup) color-map)))
+
 (defn print-elevation-colors
   ([]
     (print-elevation-colors elevation-min elevation-max 1000))
   ([start stop step]
-    (mapv
-      #(println (str (format "%,-6dm : " %)
-                     (util/color-map->ansi (elevation-color %))))
-      (range start (+ stop step) step))
-    :ok))
+    (let [output (mapv #(println (str (format "%,-6d strides : " %)
+                                      (util/color-map->ansi
+                                        (elevation-color %))))
+                       (range start (+ stop step) step))]
+      (println (string/join output)))))
 
 (defn print-temperature-colors
   ([]
-    (print-temperature-colors temperature-min temperature-max 100))
+    (print-temperature-colors temperature-min temperature-max 3))
   ([start stop step]
-    (mapv
-      #(println (str (format "%,-3dK : " %)
-                     (util/color-map->ansi (temperature-color %))))
-      (range start (+ stop step) step))
-    :ok))
+    (let [output (mapv #(println (str (format "%,-3d K : " %)
+                                      (util/color-map->ansi
+                                        (temperature-color %))))
+                        (range start (+ stop step) step))]
+      (println (string/join output)))))
 
 (defn print-precipitation-colors
   ([]
-    (print-precipitation-colors precipitation-min precipitation-max 3))
+    (print-precipitation-colors precipitation-min precipitation-max 20000))
   ([start stop step]
-    (mapv
-      #(println (str (format "%,-12dmm/year : " %)
-                     (util/color-map->ansi (precipitation-color %))))
-      (range start (+ stop step) step))
-    :ok))
+    (let [output (mapv #(println (str (format "%,-7d mils/year : " %)
+                                      (util/color-map->ansi
+                                        (precipitation-color %))))
+                       (range start (+ stop step) step))]
+      (println (string/join output)))))
