@@ -87,6 +87,30 @@
           (:green color-map)
           (:blue color-map)))
 
+(defn color-map->rgb-pixel
+  [color-map]
+  (bit-or
+    (bit-shift-left (:red color-map) 16)
+    (bit-shift-left (:green color-map) 8)
+    (:blue color-map)))
+
+(defn color-map->rgba-pixel
+  [color-map]
+  (bit-or
+    (bit-shift-left (:alpha color-map) 24)
+    (color-map->rgb-pixel color-map)))
+
+(defn rgb-pixel->color-map
+  [pixel]
+  {:red (bit-and (bit-shift-right pixel 16) 0x000000ff)
+   :green (bit-and (bit-shift-right pixel 8) 0x000000ff)
+   :blue (bit-and pixel 0x000000ff)})
+
+(defn rgba-pixel->color-map
+  [pixel]
+  (assoc (rgb-pixel->color-map pixel)
+         :alpha (bit-and (bit-shift-right pixel 24) 0x000000ff)))
+
 (def normalize-longitude
   #(if (<= % 180)
      %

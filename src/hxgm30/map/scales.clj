@@ -3,13 +3,14 @@
     [clojure.java.io :as io]
     [clojure.string :as string]
     [hxgm30.map.io :as map-io]
+    [hxgm30.map.units :as units]
     [hxgm30.map.util :as util]
     [taoensso.timbre :as log])
   (:import
     (java.awt.image BufferedImage)))
 
 (def elevation-min 0) ; in strides (~2 leagues or ~7 miles)
-(def elevation-max 16000) ; in strides (~2 leagues or ~7 miles)
+(def elevation-max units/highest-mountain) ; in strides (~2 leagues or ~7 miles)
 (def temperature-min 212) ; in degrees C/K
 (def temperature-max 333) ; in degrees C/K
 (def precipitation-min 0) ; in mils/year (~4500 mm/yr)

@@ -141,3 +141,56 @@
   (is (= -30 (util/normalize-latitude 120)))
   (is (= -60 (util/normalize-latitude 150)))
   (is (= -90 (util/normalize-latitude 180))))
+
+(deftest rgb-pixel->color-map
+  (let [pixel -16720792
+        expected {:blue 104 :green 220 :red 0}]
+    (is (= expected (util/rgb-pixel->color-map pixel))))
+  (let [pixel 4278246504
+        expected {:blue 104 :green 220 :red 0}]
+    (is (= expected (util/rgb-pixel->color-map pixel))))
+  (let [pixel 2130762856
+        expected {:blue 104 :green 220 :red 0}]
+    (is (= expected (util/rgb-pixel->color-map pixel))))
+  (let [pixel 56424
+        expected {:blue 104 :green 220 :red 0}]
+    (is (= expected (util/rgb-pixel->color-map pixel)))))
+
+(deftest rgba-pixel->color-map
+  (let [pixel -16720792
+        expected {:blue 104 :green 220 :red 0 :alpha 255}]
+    (is (= expected (util/rgba-pixel->color-map pixel))))
+  (let [pixel 4278246504
+        expected {:blue 104 :green 220 :red 0 :alpha 255}]
+    (is (= expected (util/rgba-pixel->color-map pixel))))
+  (let [pixel 2130762856
+        expected {:blue 104 :green 220 :red 0 :alpha 127}]
+    (is (= expected (util/rgba-pixel->color-map pixel))))
+  (let [pixel 56424
+        expected {:blue 104 :green 220 :red 0 :alpha 0}]
+    (is (= expected (util/rgba-pixel->color-map pixel)))))
+
+(deftest color-map->rgb-pixel
+  (let [color-map {:blue 104 :green 220 :red 0}
+        expected 56424]
+    (is (= expected (util/color-map->rgb-pixel color-map))))
+  (let [color-map {:blue 104 :green 220 :red 0 :alpha 255}
+        expected 56424]
+    (is (= expected (util/color-map->rgb-pixel color-map))))
+  (let [color-map {:blue 104 :green 220 :red 0 :alpha 127}
+        expected 56424]
+    (is (= expected (util/color-map->rgb-pixel color-map))))
+  (let [color-map {:blue 104 :green 220 :red 0 :alpha 0}
+        expected 56424]
+    (is (= expected (util/color-map->rgb-pixel color-map)))))
+
+(deftest color-map->rgba-pixel
+  (let [color-map {:blue 104 :green 220 :red 0 :alpha 255}
+        expected 4278246504]
+    (is (= expected (util/color-map->rgba-pixel color-map))))
+  (let [color-map {:blue 104 :green 220 :red 0 :alpha 127}
+        expected 2130762856]
+    (is (= expected (util/color-map->rgba-pixel color-map))))
+  (let [color-map {:blue 104 :green 220 :red 0 :alpha 0}
+        expected 56424]
+    (is (= expected (util/color-map->rgba-pixel color-map)))))

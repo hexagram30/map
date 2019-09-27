@@ -1,7 +1,8 @@
 (ns hxgm30.map.io
   (:require
     [clojure.java.io :as io]
-    [clojure.string :as string])
+    [clojure.string :as string]
+    [hxgm30.map.util :as util])
   (:import
     (clojure.lang Keyword)
     (java.awt.image BufferedImage)
@@ -127,17 +128,13 @@
    (bands this x y))
   ([this x y]
    (let [values (rgb this x y)]
-     {:red (bit-and (bit-shift-right values 16) 0x000000ff)
-      :green (bit-and (bit-shift-right values 8) 0x000000ff)
-      :blue (bit-and values 0x000000ff)})))
+     (util/rgb-pixel->color-map values))))
 
 (defn -band
   [this ^Keyword band-key x y]
-  (let [values (rgb this x y)]
-    (case band-key
-      :red (bit-and (bit-shift-right values 16) 0x000000ff)
-      :green (bit-and (bit-shift-right values 8) 0x000000ff)
-      :blue (bit-and values 0x000000ff))))
+  (let [values (rgb this x y)
+        bands (util/rgb-pixel->color-map values)]
+    (band-key bands)))
 
 (defn -draw-line
   [this [[x1 y1] [x2 y2]] color]
@@ -174,6 +171,7 @@
    :min-x #(.getMinX %)
    :min-y #(.getMinY %)
    :rgb #(.getRGB %1 %2 %3)
+   :set-rgb #(.setRGB %1 %2 %3)
    :tile #(.getTile %1 %2 %3)
    :tile-height #(.getTileHeight %)
    :tile-width #(.getTileWidth %)
