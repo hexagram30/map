@@ -62,14 +62,14 @@
   (memoize
     (fn [] (scale-colors-txt precipitation))))
 
-(def meters-per-grade (float (/ (- elevation-max elevation-min)
-                                (dec (count (elevation-colors))))))
+(def strides-per-grade (float (/ (- elevation-max elevation-min)
+                                 (dec (count (elevation-colors))))))
 
 (def degrees-per-grade (float (/ (- temperature-max temperature-min)
                                  (dec (count (temperature-colors))))))
 
-(def mmyr-per-grade (float (/ (- precipitation-max precipitation-min)
-                                 (dec (count (precipitation-colors))))))
+(def milyr-per-grade (float (/ (- precipitation-max precipitation-min)
+                                  (dec (count (precipitation-colors))))))
 
 (defn get-ranges
   ""
@@ -80,7 +80,7 @@
 (defn elevation-ranges
   ""
   []
-  (get-ranges elevation-min elevation-max meters-per-grade))
+  (get-ranges elevation-min elevation-max strides-per-grade))
 
 (defn temperature-ranges
   ""
@@ -90,7 +90,7 @@
 (defn precipitation-ranges
   ""
   []
-  (get-ranges precipitation-min precipitation-max mmyr-per-grade))
+  (get-ranges precipitation-min precipitation-max milyr-per-grade))
 
 (defn- -maybe-reverse
   [opts data]
@@ -160,20 +160,20 @@
           collection))
 
 (defn find-elevation-range
-  [meters]
-  (find-range meters (elevation-ranges)))
+  [strides]
+  (find-range strides (elevation-ranges)))
 
 (defn find-temperature-range
   [kelvin]
   (find-range kelvin (temperature-ranges)))
 
 (defn find-precipitation-range
-  [mmyr]
-  (find-range mmyr (precipitation-ranges)))
+  [milyr]
+  (find-range milyr (precipitation-ranges)))
 
 (defn elevation-color
-  [meters]
-  (get (elevation-lookup) (find-elevation-range meters)))
+  [strides]
+  (get (elevation-lookup) (find-elevation-range strides)))
 
 (defn elevation-amount
   "Given an RGB color hashmap, return the corresponding elevation."
@@ -190,8 +190,8 @@
   (util/mean (get (temperature-rev-lookup) color-map)))
 
 (defn precipitation-color
-  [mmyr]
-  (get (precipitation-lookup) (find-precipitation-range mmyr)))
+  [milyr]
+  (get (precipitation-lookup) (find-precipitation-range milyr)))
 
 (defn precipitation-amount
   "Given an RGB color hashmap, return the corresponding annual precipitation."
@@ -227,3 +227,39 @@
                                         (precipitation-color %))))
                        (range start (+ stop step) step))]
       (println (string/join output)))))
+
+(defn coord->temperature
+  [im x y]
+  (-> (map-io/rgb im x y)
+      util/rgb-pixel->color-map
+      temperature-amount))
+
+(defn coord->elevation
+  [im x y]
+  (-> (map-io/rgb im x y)
+      util/rgb-pixel->color-map
+      elevation-amount))
+
+(defn coord->precipitation
+  [im x y]
+  (-> (map-io/rgb im x y)
+      util/rgb-pixel->color-map
+      precipitation-amount))
+
+(defn temperature->pixel
+  [kelvin]
+  (-> kelvin
+      temperature-color
+      util/color-map->rgb-pixel))
+
+(defn elevation->pixel
+  [strides]
+  (-> strides
+      elevation-color
+      util/color-map->rgb-pixel))
+
+(defn precipitation->pixel
+  [milyr]
+  (-> milyr
+      precipitation-color
+      util/color-map->rgb-pixel))

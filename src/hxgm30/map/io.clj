@@ -115,6 +115,8 @@
   (rgb [this x y]
     "Returns an integer pixel in the default RGB color model (TYPE_INT_ARGB)
     and default sRGB colorspace.")
+  (set-rgb [this x y pixel]
+    "Sets a pixel in this BufferedImage to the specified RGB value.")
   (tile [this x y])
   (tile-height [this])
   (tile-width [this])
@@ -171,7 +173,7 @@
    :min-x #(.getMinX %)
    :min-y #(.getMinY %)
    :rgb #(.getRGB %1 %2 %3)
-   :set-rgb #(.setRGB %1 %2 %3)
+   :set-rgb #(.setRGB %1 %2 %3 %4)
    :tile #(.getTile %1 %2 %3)
    :tile-height #(.getTileHeight %)
    :tile-width #(.getTileWidth %)
