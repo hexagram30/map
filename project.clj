@@ -87,7 +87,8 @@
     "eastwood" ["with-profile" "+lint" "eastwood" "{:namespaces [:source-paths]}"]
     "lint" ["do"
       ["kibit"]
-      ["eastwood"]]
+      ; ["eastwood"]
+      ]
     "ltest" ["with-profile" "+test" "ltest"]
     "ltest-clean" ["do"
       ["clean"]
@@ -98,4 +99,4 @@
       ["lint"]
       ["ltest" ":all"]
       ["ubercompile"]
-      ["uberjar"]]})
+      ["jar"]]})
