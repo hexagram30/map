@@ -89,15 +89,19 @@
 
 (defn color-map->rgb-pixel
   [color-map]
-  (bit-or
-    (bit-shift-left (:red color-map) 16)
-    (bit-shift-left (:green color-map) 8)
-    (:blue color-map)))
+  (try
+    (bit-or
+      (bit-shift-left (int (:red color-map)) 16)
+      (bit-shift-left (int (:green color-map)) 8)
+      (int (:blue color-map)))
+    (catch Exception ex
+      (log/debug "Error with color-map:" color-map)
+      (log/debug ex))))
 
 (defn color-map->rgba-pixel
   [color-map]
   (bit-or
-    (bit-shift-left (:alpha color-map) 24)
+    (bit-shift-left (int (:alpha color-map)) 24)
     (color-map->rgb-pixel color-map)))
 
 (defn rgb-pixel->color-map
@@ -151,4 +155,7 @@
 
 (defn mean
   [values]
-  (Math/round (/ (reduce + values) (count values))))
+  (log/trace "Getting mean for" values)
+  (cond (nil? values) 0
+        (= 1 (count values)) (first values)
+        :else (Math/round (/ (reduce + values) (count values)))))

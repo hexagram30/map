@@ -8,6 +8,7 @@
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
     [hxgm30.map.bands :as bands]
+    [hxgm30.map.biome.temperature :as biome-tmp]
     [hxgm30.map.components.config :as config]
     [hxgm30.map.components.core]
     [hxgm30.map.components.layers :as layers]
@@ -17,6 +18,7 @@
     [hxgm30.map.tile :as tile]
     [hxgm30.map.util :as util]
     [hxgm30.map.voronoi :as voronoi]
+    [taoensso.timbre :as log]
     [trifl.java :refer [show-methods]])
   (:import
     (javax.imageio ImageIO)
@@ -38,7 +40,7 @@
   This is defined in a function for re-use. For instance, when a REPL is
   reloaded, the options will be lost and need to be re-applied."
   []
-  (logger/set-level! '[hxgm30] :debug)
+  (logger/set-level! '[hxgm30] :info)
   (setup-manager setup-options))
 
 (defn init-and-startup
