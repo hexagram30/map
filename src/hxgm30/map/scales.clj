@@ -178,7 +178,10 @@
 (defn elevation-amount
   "Given an RGB color hashmap, return the corresponding elevation."
   [color-map]
-  (util/mean (get (elevation-rev-lookup) color-map)))
+  (->> color-map
+       (get (elevation-rev-lookup))
+       ((fn [x] (log/trace "Elevation amount:" x) x))
+       (util/mean)))
 
 (defn temperature-color
   [kelvin]
@@ -187,7 +190,10 @@
 (defn temperature-amount
   "Given an RGB color hashmap, return the corresponding temperature."
   [color-map]
-  (util/mean (get (temperature-rev-lookup) color-map)))
+  (->> color-map
+       (get (temperature-rev-lookup))
+       ((fn [x] (log/trace "Temperature amount:" x) x))
+       (util/mean)))
 
 (defn precipitation-color
   [milyr]
@@ -196,7 +202,10 @@
 (defn precipitation-amount
   "Given an RGB color hashmap, return the corresponding annual precipitation."
   [color-map]
-  (util/mean (get (precipitation-rev-lookup) color-map)))
+  (->> color-map
+       (get (precipitation-rev-lookup))
+       ((fn [x] (log/trace "Precipitation amount:" x) x))
+       (util/mean)))
 
 (defn print-elevation-colors
   ([]
@@ -230,26 +239,39 @@
 
 (defn coord->temperature
   [im x y]
+  (log/debugf "Getting temperature for [%s, %s] ..." x y)
   (-> (map-io/rgb im x y)
+      ((fn [x] (log/trace "RGB pixel:" x) x))
       util/rgb-pixel->color-map
+      ((fn [x] (log/trace "Color map:" x) x))
       temperature-amount))
 
 (defn coord->elevation
   [im x y]
+  (log/debugf "Getting elevation for [%s, %s] ..." x y)
   (-> (map-io/rgb im x y)
+      ((fn [x] (log/trace "RGB pixel:" x) x))
       util/rgb-pixel->color-map
+      ((fn [x] (log/trace "Color map:" x) x))
       elevation-amount))
 
 (defn coord->precipitation
   [im x y]
+  (log/debugf "Getting precipitation for [%s, %s] ..." x y)
   (-> (map-io/rgb im x y)
+      ((fn [x] (log/trace "RGB pixel:" x) x))
       util/rgb-pixel->color-map
-      precipitation-amount))
+      ((fn [x] (log/trace "Color map:" x) x))
+      precipitation-amount
+      ((fn [x] (log/trace "Precipitation:" x) x))))
 
 (defn temperature->pixel
   [kelvin]
+  (log/debugf "Gettomg pixel for temperature %s ..." kelvin)
   (-> kelvin
+      ((fn [x] (log/trace "Temperate:" x) x))
       temperature-color
+      ((fn [x] (log/trace "Color map:" x) x))
       util/color-map->rgb-pixel))
 
 (defn elevation->pixel

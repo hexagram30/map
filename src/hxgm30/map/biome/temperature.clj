@@ -3,17 +3,20 @@
     [clojure.java.io :as io]
     [hxgm30.map.biome.elevation :as elevation]
     [hxgm30.map.io :as map-io]
-    [hxgm30.map.scales :as scales])
+    [hxgm30.map.scales :as scales]
+    [taoensso.timbre :as log])
   (:import
     (java.awt.image BufferedImage)
     (java.io File)
     (javax.imageio ImageIO)))
 
+(def temperature-zone-height 1406.0)
+
 (defn alt-adjust-average-temp
   "Subtract 5.6 °C/K for each 1,000 meters of elevation, or in this case, every
   1,406 strides."
   [kelvin-temp m-elevation]
-  (- kelvin-temp (* 5.6 (/ m-elevation 1406.0))))
+  (- kelvin-temp (* 5.6 (/ m-elevation temperature-zone-height))))
 
 (def temperature-file "001-mercator-offset-temperature")
 (def elev-temp-file "001-mercator-offset-elevation-temperature")
@@ -40,13 +43,23 @@
   pixel with the adjusted temperature data to the adjusted image."
   [temp-im elev-im adj-im [x y]]
   (let [temp-pixel (map-io/rgb temp-im x y)
-        ; temp (scales/coord->precipitation temp-im x y)
-        ; elev (scales/coord->elevation elev-im x y)
-        ]
-    ;; XXX if elevation less than 1400, copy to adjsuted
-    ;; XXX if elevation greater or equal, get adjusted temp and add that to the
-    ;;     adjsuted image
-    (map-io/set-rgb adj-im x y temp-pixel)))
+        temp (scales/coord->temperature temp-im x y)
+        elev (scales/coord->elevation elev-im x y)]
+    (try
+      (if (< elev temperature-zone-height)
+        (map-io/set-rgb adj-im x y temp-pixel)
+        (let [adj-temp (alt-adjust-average-temp temp elev)
+              new-temp-pixel (scales/temperature->pixel adj-temp)]
+          (map-io/set-rgb adj-im x y new-temp-pixel)))
+      (catch Exception ex
+        (log/debugf
+          "At position [%s, %s] couldn't process temp %s or elev %s ..."
+          x
+          y
+          temp
+          elev)
+        (log/debug ex)
+        (map-io/set-rgb adj-im x y temp-pixel)))))
 
 (defn create-updated-temperature-file
   "This function reads pixel data for elevation and temperature from two files,
