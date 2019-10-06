@@ -11,14 +11,48 @@
 
 (def elevation-min 0) ; in strides (~2 leagues or ~7 miles)
 (def elevation-max units/highest-mountain) ; in strides (~2 leagues or ~7 miles)
+(def elevation-file "001-mercator-elevation-scale-hex")
+
+(def precipitation-min 0) ; in mils/year (~4500 mm/yr)
+(def precipitation-max 640000) ; in mils/year, ~12,000 mil/week (~16,000 mm/yr)
+(def precipitation-file "001-mercator-precipitation-scale-hex")
+
 (def temperature-min 212) ; in degrees C/K
 (def temperature-max 333) ; in degrees C/K
-(def precipitation-min 0) ; in mils/year (~4500 mm/yr)
-(def precipitation-max 177000) ; in mils/year, ~3400 mil/week (~4500 mm/yr)
-
-(def elevation-file "001-mercator-elevation-scale-hex")
 (def temperature-file "001-mercator-temperature-scale-hex")
-(def precipitation-file "001-mercator-precipitation-scale-hex")
+
+(defn elevation-check
+  [strides]
+  (cond (< strides elevation-min)
+        elevation-min
+
+        (> strides elevation-max)
+        elevation-max
+
+        :else
+        strides))
+
+(defn precipitation-check
+  [milyr]
+  (cond (< milyr precipitation-min)
+        precipitation-min
+
+        (> milyr precipitation-max)
+        precipitation-max
+
+        :else
+        milyr))
+
+(defn temperature-check
+  [kelvin]
+  (cond (< kelvin temperature-min)
+        temperature-min
+
+        (> kelvin temperature-max)
+        temperature-max
+
+        :else
+        kelvin))
 
 (defn read-scale-img
   "Image files are read from the top-down, so high elevations and high numbers
@@ -161,15 +195,15 @@
 
 (defn find-elevation-range
   [strides]
-  (find-range strides (elevation-ranges)))
+  (find-range (elevation-check strides) (elevation-ranges)))
 
 (defn find-temperature-range
   [kelvin]
-  (find-range kelvin (temperature-ranges)))
+  (find-range (temperature-check kelvin) (temperature-ranges)))
 
 (defn find-precipitation-range
   [milyr]
-  (find-range milyr (precipitation-ranges)))
+  (find-range (precipitation-check milyr) (precipitation-ranges)))
 
 (defn elevation-color
   [strides]
@@ -229,7 +263,7 @@
 
 (defn print-precipitation-colors
   ([]
-    (print-precipitation-colors precipitation-min precipitation-max 20000))
+    (print-precipitation-colors precipitation-min precipitation-max 80000))
   ([start stop step]
     (let [output (mapv #(println (str (format "%,-7d mils/year : " %)
                                       (util/color-map->ansi
@@ -267,7 +301,7 @@
 
 (defn temperature->pixel
   [kelvin]
-  (log/debugf "Gettomg pixel for temperature %s ..." kelvin)
+  (log/debugf "Getting pixel for temperature %s ..." kelvin)
   (-> kelvin
       ((fn [x] (log/trace "Temperate:" x) x))
       temperature-color
