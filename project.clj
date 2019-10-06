@@ -28,7 +28,7 @@
     [org.clojure/tools.reader]]
   :dependencies [
     ;; JDK version issues overrides
-    [org.clojure/core.rrb-vector "0.0.14"]
+    [org.clojure/core.rrb-vector "0.1.0"]
     [org.clojure/tools.reader "1.3.2"]
     ;; Regular dependencies
     [clojusc/system-manager "0.3.0"]
