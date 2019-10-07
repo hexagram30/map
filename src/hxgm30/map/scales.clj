@@ -176,7 +176,7 @@
   (memoize
     (fn []
       (->> (lookup-grouping
-             (precipitation-colors) (precipitation-ranges) {:rev? true})
+             (precipitation-colors) (precipitation-ranges))
            (map vec)
            (into {})))))
 
@@ -184,7 +184,7 @@
   (memoize
     (fn []
       (->> (lookup-grouping
-             (precipitation-colors) (precipitation-ranges) {:rev? true})
+             (precipitation-colors) (precipitation-ranges))
            (map (comp vec reverse))
            (into {})))))
 
@@ -217,7 +217,7 @@
 
 (defn print-precipitation-colors
   ([]
-    (print-precipitation-colors precipitation-min precipitation-max 40000))
+    (print-precipitation-colors precipitation-min precipitation-max 43000))
   ([start stop step]
     (let [output (mapv #(println (str (format "%,-7d mils/year : " %)
                                       (util/color-map->ansi
