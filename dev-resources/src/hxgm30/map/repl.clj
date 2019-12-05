@@ -83,6 +83,7 @@
 (comment
   (util/make-matrix biome/sorted-temps biome/sorted-precips)
   (biome/print-colors-matrix)
+  (biome/print-legend)
   )
 
 (comment

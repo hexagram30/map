@@ -63,3 +63,11 @@
   []
   (doseq [row biomes-matrix]
     (print-colors-row row)))
+
+(defn print-legend
+  []
+  (doseq [zone biomes]
+    (print (util/color-map->ansi
+            (util/hex->color-map (:color zone))
+            util/ansi-rectangle))
+    (println " " (:name zone))))
