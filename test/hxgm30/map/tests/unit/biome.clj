@@ -65,3 +65,19 @@
          (nth biome/biomes 20)))
   (is (= {:color "#3ebc8a" :name "Tropical Rain Forest"}
          (nth biome/biomes 41))))
+
+(deftest nearest-biome
+  (is (= {:color "#ffffff", :name "Polar / Alvar Desert"}
+       (biome/nearest -100 0)))
+  (is (= {:color "#ffffff", :name "Polar / Alvar Desert"}
+         (biome/nearest 100 270)))
+  (is (= {:color "#368892", :name "Boreal / Subalpine Rain Forest"}
+         (biome/nearest 1000 280)))
+  (is (= {:color "#3ebc8a", :name "Tropical Rain Forest"}
+         (biome/nearest 16000 320)))
+  (is (= {:color "#57c784", :name "Tropical Moist Forest"}
+         (biome/nearest 20000 400)))
+  (is (= {:color "#d4d28c", :name "Tropical Desert"}
+         (biome/nearest 0 400)))
+  (is (= {:color "#9fb385", :name "Warm Temperate / Lower Montane Desert Scrub"}
+         (biome/nearest 100 290))))

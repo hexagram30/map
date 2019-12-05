@@ -19,7 +19,7 @@
 (def nearest-precip #(util/nearest sorted-precips %))
 
 (def biomes (map-io/read-edn "001-mercator-biomes"))
-(def biomes-indexed (map-indexed #(vector %1 %2) biomes))
+(def biomes-indexed (map-indexed vector biomes))
 (def biomes-matrix [
   [ 0  0  0  0  0  0  0  0  0]
   [ 1  2  3  4  4  4  4  4  4]
@@ -32,12 +32,24 @@
   [13 13 18 22 23 26 31 36 41]
   [13 13 13 18 22 23 26 31 36]
   [13 13 13 13 18 22 23 26 31]])
+(def biomes-temp-indexed
+  (partition 2 (interleave sorted-temps biomes-matrix)))
 
-;; XXX create lookup where the keys are the temp/precip coords and the values
-;;     are the corresponding elements of the biome data matrix; should probably
-;;     also be a memoized fn
-;; XXX create nearest-biome fn that uses the lookup matrix and the nearest-*
-;;     fns
+(defn biomes-precip-indexed
+  [row]
+  (partition 2 (interleave sorted-precips row)))
+
+(def temp-precip->biome-index
+  (into {} (mapcat (fn [[y row]]
+                     (map (fn [[x elem]] [[x y] elem])
+                          (biomes-precip-indexed row)))
+                   biomes-temp-indexed)))
+
+(defn nearest
+  [precip temp]
+  (nth biomes
+       (get temp-precip->biome-index [(nearest-precip precip)
+                                      (nearest-temp temp)])))
 
 (defn print-colors-row
   [row]
