@@ -81,7 +81,8 @@
   (.query hc (long-array [3 3]) (long-array [8 10])))
 
 (comment
-  (make-matrix biome/sorted-biome-temps biome/sorted-biome-precips)
+  (util/make-matrix biome/sorted-temps biome/sorted-precips)
+  (biome/print-colors-matrix)
   )
 
 (comment

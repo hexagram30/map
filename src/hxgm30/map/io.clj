@@ -1,5 +1,6 @@
 (ns hxgm30.map.io
   (:require
+    [clojure.edn :as edn]
     [clojure.java.io :as io]
     [clojure.string :as string]
     [hxgm30.map.util :as util])
@@ -41,6 +42,9 @@
 (def palette-format
   "planets/%s.txt")
 
+(def edn-format
+  "planets/%s.edn")
+
 (defn read-resource-image
   [path]
   (-> path
@@ -67,6 +71,15 @@
   (->> filename
        (format bmp-format)
        read-resource-image))
+
+(defn read-edn
+  "Read an .edn file from the `resources/planets` directory."
+  [filename]
+  (->> filename
+       (format edn-format)
+       io/resource
+       slurp
+       edn/read-string))
 
 (def read-planet
   "Given a string value for a planet's .bmp file (without the .bmp extension)

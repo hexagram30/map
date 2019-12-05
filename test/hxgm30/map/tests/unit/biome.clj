@@ -8,6 +8,37 @@
     [hxgm30.map.biome.core :as biome]
     [hxgm30.map.biome.temperature :as biome-tmp]))
 
+(deftest cols-rows-biomes-count
+  (is (= 11 biome/rows))
+  (is (= biome/rows (count biome/biomes-matrix)))
+  (is (= 9 biome/cols))
+  (is (= biome/cols (count (first biome/biomes-matrix))))
+  (is (= 42 (count biome/biomes))))
+
+(deftest sorted
+  (is (= #{273.15
+           274.65
+           276.15
+           279.15
+           285.15
+           288.9840949292747
+           297.15
+           309.5271975962495
+           321.15
+           345.90439519249907
+           369.15}
+         biome/sorted-temps))
+  (is (= #{62.5
+          125.0
+          250.0
+          500.0
+          1000.0
+          2000.0
+          4000.0
+          8000.0
+          16000.0}
+         biome/sorted-precips)))
+
 (deftest nearest-temp
   (is (= 273.15 (biome/nearest-temp (+ -100 biome-tmp/K))))
   (is (= 273.15 (biome/nearest-temp (+ -10 biome-tmp/K))))
@@ -24,3 +55,13 @@
   (is (= 1000.0 (biome/nearest-precip 1000)))
   (is (= 8000.0 (biome/nearest-precip 10000)))
   (is (= 16000.0 (biome/nearest-precip 100000))))
+
+(deftest biomes
+  (is (= 42 (count biome/biomes)))
+  (is (= {:color "#ffffff" :name "Polar / Alvar Desert"}
+         (nth biome/biomes 0)))
+  (is (= {:color "#80ad85"
+          :name "Warm Temperate / Lower Montane Thorn Steppe / Woodland"}
+         (nth biome/biomes 20)))
+  (is (= {:color "#3ebc8a" :name "Tropical Rain Forest"}
+         (nth biome/biomes 41))))
