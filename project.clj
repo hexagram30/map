@@ -15,7 +15,7 @@
        ns
        "\u001B[35m]\u001B[33m λ\u001B[m=> "))
 
-(defproject hexagram30/map "0.1.0-SNAPSHOT"
+(defproject hexagram30/map "0.2.0-SNAPSHOT"
   :description "A map-making library for worlds, cities, dungeons, and buildings in hexagram30 projects"
   :url "https://github.com/hexagram30/map"
   :license {
@@ -28,7 +28,7 @@
     [org.clojure/tools.reader]]
   :dependencies [
     ;; JDK version issues overrides
-    [org.clojure/core.rrb-vector "0.1.0"]
+    [org.clojure/core.rrb-vector "0.1.1"]
     [org.clojure/tools.reader "1.3.2"]
     ;; Regular dependencies
     [clojusc/system-manager "0.3.0"]
@@ -60,11 +60,11 @@
       :plugins [
         [jonase/eastwood "0.3.6"]
         [lein-ancient "0.6.15"]
-        [lein-kibit "0.1.7"]
-        [lein-nvd "1.3.0"]]}
+        [lein-kibit "0.1.8"]
+        [lein-nvd "1.3.1"]]}
     :test {
       :plugins [
-        [lein-ltest "0.3.0"]]
+        [lein-ltest "0.4.0"]]
       :test-selectors {
         :unit #(not (or (:integration %) (:system %)))
         :integration :integration
