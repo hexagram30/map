@@ -1,9 +1,9 @@
 [{:color "#ffffff" :name "Polar / Alvar Desert"}
 
- {:color "#b0b1ac" :name "Polar / Alvar Dry Tundra"}
- {:color "#a2aca8" :name "Polar / Alvar Moist Tundra"}
- {:color "#95a8a8" :name "Polar / Alvar Wet Tundra"}
- {:color "#8fa8b7" :name "Polar / Alvar Rain Tundra"}
+ {:color "#c1c1be" :name "Polar / Alvar Dry Tundra"}
+ {:color "#bcc3c1" :name "Polar / Alvar Moist Tundra"}
+ {:color "#bbc6c6" :name "Polar / Alvar Wet Tundra"}
+ {:color "#becbd3" :name "Polar / Alvar Rain Tundra"}
 
  {:color "#888981" :name "Dry Tundra"}
  {:color "#6b8179" :name "Moist Tundra"}
@@ -16,7 +16,7 @@
  {:color "#c6c68a" :name "Subtropical / Premontane Desert"}
  {:color "#d4d28c" :name "Tropical Desert"}
 
- {:color "#7d907d" :name "Dry Scrub"}
+ {:color "#7d907d" :name "Boreal / Subalpine Dry Scrub"}
  {:color "#889e80" :name "Cool Temperate / Montane Desert Scrub"}
  {:color "#9fb385" :name "Warm Temperate / Lower Montane Desert Scrub"}
  {:color "#abc186" :name "Subtropical / Premontane Desert Scrub"}

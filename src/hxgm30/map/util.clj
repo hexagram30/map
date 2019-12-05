@@ -61,9 +61,12 @@
      :green (nth components 1)
      :blue (nth components 2)}))
 
+(def ansi-square "███")
+(def ansi-rectangle "███████")
+
 (defn color-map->ansi
   ([color-map]
-    (color-map->ansi color-map "███████"))
+    (color-map->ansi color-map ansi-rectangle))
   ([color-map text]
     (str \u001b "[38;2;"
          (format "%s;%s;%sm%s"
@@ -82,10 +85,11 @@
 
 (defn color-map->bash-true-color
   [color-map]
-  (format "printf \"\\x1b[38;2;%s;%s;%sm██\\x1b[0m\\n\""
+  (format "printf \"\\x1b[38;2;%s;%s;%sm%s\\x1b[0m\\n\""
           (:red color-map)
           (:green color-map)
-          (:blue color-map)))
+          (:blue color-map)
+          ansi-square))
 
 (defn color-map->rgb-pixel
   [color-map]
@@ -173,4 +177,4 @@
   ([xs ys]
    (make-matrix xs ys vector))
   ([xs ys f]
-   (mapv (fn [y] (mapv #(f % y) xs)) ys)))
+   (mapv (fn [x] (mapv #(f x %) ys)) xs)))
