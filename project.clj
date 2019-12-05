@@ -35,6 +35,7 @@
     [clojusc/twig "0.4.1"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.10.1"]
+    [org.clojure/data.avl "0.1.0"]
     [trystan/delaunay-triangulation "1.0.1"]
     [trystan/voronoi-diagram "1.0.0"]]
   :profiles {
@@ -43,6 +44,7 @@
     :dev {
       :dependencies [
         [clojusc/trifl "0.4.2"]
+        [com.github.davidmoten/hilbert-curve "0.2.1"]
         [org.clojure/tools.namespace "0.3.1"]]
       :plugins [
         [lein-shell "0.5.0"]

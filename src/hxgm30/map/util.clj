@@ -159,3 +159,18 @@
   (cond (nil? values) 0
         (= 1 (count values)) (first values)
         :else (Math/round (/ (reduce + values) (count values)))))
+
+(defn nearest
+  "The `nums` parameter needs to be a sorted collection.
+
+  From Chouser: https://groups.google.com/forum/#!topic/clojure/quEzEM_ndCY"
+  [nums x]
+  (let [greater (first (subseq nums >= x))
+        smaller (first (rsubseq nums <= x))]
+    (apply min-key #(Math/abs (- % x)) (remove nil? [greater smaller]))))
+
+(defn make-matrix
+  ([xs ys]
+   (make-matrix xs ys vector))
+  ([xs ys f]
+   (mapv (fn [y] (mapv #(f % y) xs)) ys)))

@@ -1,5 +1,6 @@
 (ns hxgm30.map.repl
   (:require
+    [clojure.data.avl :as avl]
     [clojure.java.io :as io]
     [clojure.pprint :refer [pprint]]
     [clojure.string :as string]
@@ -8,6 +9,7 @@
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
     [hxgm30.map.bands :as bands]
+    [hxgm30.map.biome.core :as biome]
     [hxgm30.map.biome.temperature :as biome-tmp]
     [hxgm30.map.components.config :as config]
     [hxgm30.map.components.core]
@@ -23,7 +25,11 @@
   (:import
     (javax.imageio ImageIO)
     (java.net URI)
-    (java.nio.file Paths)))
+    (java.nio.file Paths)
+    (org.davidmoten.hilbert HilbertCurve
+                            HilbertCurve$Builder
+                            HilbertCurveRenderer
+                            HilbertCurveRenderer$Option)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Initial Setup & Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -62,6 +68,21 @@
   (println (slurp (io/resource "text/banner.txt")))
   :ok)
 
+(def hcb (.bits (HilbertCurve/small) 4))
+(def hc (.dimensions hcb 2))
+
+(comment
+  (HilbertCurveRenderer/renderToFile
+    4 400 "hilbert.png" (into-array HilbertCurveRenderer$Option []))
+  (HilbertCurveRenderer/renderToFile
+    4 1200 "hilbert.png" (into-array HilbertCurveRenderer$Option
+                                     [HilbertCurveRenderer$Option/COLORIZE
+                                      HilbertCurveRenderer$Option/LABEL]))
+  (.query hc (long-array [3 3]) (long-array [8 10])))
+
+(comment
+  (make-matrix biome/sorted-biome-temps biome/sorted-biome-precips)
+  )
 
 (comment
   (def filename "001-mercator-bump-black-sea-crop-small")
