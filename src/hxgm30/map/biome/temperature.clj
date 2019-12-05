@@ -10,6 +10,7 @@
     (java.io File)
     (javax.imageio ImageIO)))
 
+(def K 273.15)
 (def temperature-zone-height 1406.0)
 
 (defn alt-adjust-average-temp
