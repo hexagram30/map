@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [clojure.walk :refer [postwalk]]
+    [com.evocomputing.colors :as colors]
     [hxgm30.map.components.config :as config]
     [taoensso.timbre :as log])
   (:import
@@ -76,6 +77,12 @@
                  text)
          \u001b "[0m")))
 
+(defn hex->ansi
+  ([hex]
+    (hex->ansi hex ansi-square))
+  ([hex text]
+    (color-map->ansi (hex->color-map hex) text)))
+
 (defn color-map->hex
   [color-map]
   (format "0x%02x%02x%02x"
@@ -108,11 +115,19 @@
     (bit-shift-left (int (:alpha color-map)) 24)
     (color-map->rgb-pixel color-map)))
 
+(defn hex->rgb-pixel
+  [hex]
+  (color-map->rgb-pixel (hex->color-map hex)))
+
 (defn rgb-pixel->color-map
   [pixel]
   {:red (bit-and (bit-shift-right pixel 16) 0x000000ff)
    :green (bit-and (bit-shift-right pixel 8) 0x000000ff)
    :blue (bit-and pixel 0x000000ff)})
+
+(defn rgb-pixel->hex
+  [pixel]
+  (color-map->hex (rgb-pixel->color-map pixel)))
 
 (defn rgba-pixel->color-map
   [pixel]
@@ -178,3 +193,35 @@
    (make-matrix xs ys vector))
   ([xs ys f]
    (mapv (fn [x] (mapv #(f x %) ys)) xs)))
+
+(defn to-fahrenheit [k]
+  (- (* k 1.8) 459.67))
+
+(defn print-gimp-palette
+  [name color-map-col]
+  (println "GIMP Palette")
+  (println (str "Name: " name))
+  (println "Columns: 0")
+  (println "#")
+  (for [x color-map-col]
+    (println (format "%s\t%s\t%s\tHistory Color"
+                     (:red x) (:green x) (:blue x)))))
+
+(defn print-hexs->gimp-palette
+  [name hex-vals]
+  ;; XXX we can extract this logic later for sorting colors by spectrum,
+  ;;     if it's ever needed anywhere else
+  (->> (map colors/create-color hex-vals)
+       (sort-by :hsl)
+       (map (fn [c]
+             (let [x (:rgba c)]
+              {:red (nth x 0)
+               :green (nth x 1)
+               :blue (nth x 2)})))
+       (print-gimp-palette name)))
+
+(def clj-hex->html (comp #(str "#" %) #(subs % 2 8)))
+
+(defn clj-hexs->html
+  [hex-vals]
+  (map clj-hex->html hex-vals))
