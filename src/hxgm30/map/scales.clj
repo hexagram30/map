@@ -245,9 +245,9 @@
 ;;;   Temperature   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def temperature-min 212) ; in degrees C/K
-(def temperature-max 333) ; in degrees C/K
-(def temperature-file "001-mercator-temperature-scale-hex")
+(def temperature-min 246) ; in degrees C/K
+(def temperature-max 316) ; in degrees C/K
+(def temperature-file "001-temperature-scale-hex2")
 (def temperature (read-scale-txt temperature-file))
 (def temperature-colors
   (memoize
@@ -306,9 +306,9 @@
 
 (defn print-temperature-colors
   ([]
-    (print-temperature-colors temperature-min temperature-max 3))
+    (print-temperature-colors temperature-min temperature-max 2))
   ([start stop step]
-    (let [output (mapv #(println (str (format "%,-3d K : " %)
+    (let [output (mapv #(println (str (format "%,-3d K (%,3d F): " % (int (util/to-fahrenheit %)))
                                       (util/color-map->ansi
                                         (temperature-color %))))
                         (range start (+ stop step) step))]
