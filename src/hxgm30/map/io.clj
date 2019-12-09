@@ -105,6 +105,8 @@
 
 ;; Note: BufferedImage starts counting [0,0] at the upper-left of the image.
 (defprotocol BmpAPI
+  (all-pixels [this]
+    "Return a lazy sequence of all the pixels in the given image.")
   (band [this band-key x y]
     "Extract the value for the given band at the given `x` and `y` coordinate.
     Valid values for band are `:red`, `:green`, or `:blue`.")
@@ -133,6 +135,8 @@
   (tile [this x y])
   (tile-height [this])
   (tile-width [this])
+  (unique-hex-colors [this])
+  (unique-rgb-colors [this])
   (x-tiles-count [this]
     "Returns the number of tiles in the x direction.")
   (y-tiles-count [this]
@@ -173,8 +177,25 @@
                     (int-array (map (comp int second) points))
                     (count points))))
 
+(defn -get-all-pixels
+  [this]
+  (for [x (range (width this))
+        y (range (height this))]
+    (.getRGB this x y)))
+
+(defn -unique-rgb-colors
+  [this]
+  (into #{} (-get-all-pixels this)))
+
+(defn -unique-hex-colors
+  [this]
+  (def hex-vals (->> (-unique-rgb-colors this)
+                     (mapv util/rgb-pixel->hex)
+                     (into #{}))))
+
 (def bmp-behaviour
-  {:band -band
+  {:all-pixels -get-all-pixels
+   :band -band
    :band-percent #(* (/ (band %1 %2 %3 %4) 255.0) 100)
    :data #(.getData %)
    :draw-line! -draw-line
@@ -190,6 +211,8 @@
    :tile #(.getTile %1 %2 %3)
    :tile-height #(.getTileHeight %)
    :tile-width #(.getTileWidth %)
+   :unique-hex-colors -unique-hex-colors
+   :unique-rgb-colors -unique-rgb-colors
    :x-tiles-count #(.getNumXTiles %)
    :y-tiles-count #(.getNumYTiles %)})
 
