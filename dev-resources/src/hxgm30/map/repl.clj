@@ -7,6 +7,7 @@
     [clojure.tools.namespace.repl :as repl]
     [clojusc.system-manager.core :refer :all]
     [clojusc.twig :as logger]
+    [com.evocomputing.colors :as colors]
     [com.stuartsierra.component :as component]
     [hxgm30.map.bands :as bands]
     [hxgm30.map.biome.core :as biome]
@@ -84,6 +85,7 @@
   (util/make-matrix biome/sorted-temps biome/sorted-precips)
   (biome/print-colors-matrix)
   (biome/print-legend)
+  (biome/create-image)
   )
 
 (comment

@@ -33,6 +33,7 @@
     ;; Regular dependencies
     [clojusc/system-manager "0.3.0"]
     [clojusc/twig "0.4.1"]
+    [com.evocomputing/colors "1.0.4"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.clojure/clojure "1.10.1"]
     [org.clojure/data.avl "0.1.0"]
