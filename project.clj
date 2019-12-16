@@ -35,6 +35,7 @@
     [clojusc/twig "0.4.1"]
     [com.evocomputing/colors "1.0.4"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
+    [org.apache.commons/commons-math3 "3.6.1"]
     [org.clojure/clojure "1.10.1"]
     [org.clojure/data.avl "0.1.0"]
     [trystan/delaunay-triangulation "1.0.1"]

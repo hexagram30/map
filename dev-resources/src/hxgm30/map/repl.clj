@@ -11,13 +11,14 @@
     [com.stuartsierra.component :as component]
     [hxgm30.map.bands :as bands]
     [hxgm30.map.biome.core :as biome]
-    [hxgm30.map.biome.temperature :as biome-tmp]
+    [hxgm30.map.biome.temperature :as biome-temp]
     [hxgm30.map.components.config :as config]
     [hxgm30.map.components.core]
     [hxgm30.map.components.layers :as layers]
     [hxgm30.map.io :as map-io]
     [hxgm30.map.row :as row]
     [hxgm30.map.scales :as scales]
+    [hxgm30.map.scales.temperature :as scaled-temp]
     [hxgm30.map.tile :as tile]
     [hxgm30.map.util :as util]
     [hxgm30.map.voronoi :as voronoi]
@@ -27,6 +28,7 @@
     (javax.imageio ImageIO)
     (java.net URI)
     (java.nio.file Paths)
+    (org.apache.commons.math3.util FastMath)
     (org.davidmoten.hilbert HilbertCurve
                             HilbertCurve$Builder
                             HilbertCurveRenderer
@@ -86,6 +88,7 @@
   (biome/print-colors-matrix)
   (biome/print-legend)
   (biome/create-image)
+  (scaled-temp/print-colors biome-temp/tr)
   )
 
 (comment

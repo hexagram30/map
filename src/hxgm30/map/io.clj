@@ -185,7 +185,7 @@
 
 (defn -unique-rgb-colors
   [this]
-  (into #{} (-get-all-pixels this)))
+  (set (-get-all-pixels this)))
 
 (defn -unique-hex-colors
   [this]
