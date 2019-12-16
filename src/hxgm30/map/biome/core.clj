@@ -1,9 +1,18 @@
 (ns hxgm30.map.biome.core
   (:require
     [clojure.data.avl :as avl]
+    [hxgm30.map.biome.precipitation :as precipitation]
     [hxgm30.map.biome.temperature :as temperature]
     [hxgm30.map.io :as map-io]
-    [hxgm30.map.util :as util]))
+    [hxgm30.map.scales :as scales]
+    [hxgm30.map.scales.temperature :as scaled-temp]
+    [hxgm30.map.util :as util]
+    [taoensso.timbre :as log])
+  (:import
+    (java.awt.image BufferedImage)))
+
+(def biomes-colorspace-file "001-mercator-biomes-colors")
+(def biomes-file "001-mercator-offset-biomes")
 
 (def gen-temp-step #(+ temperature/K (* (Math/pow 2 %) 1.5)))
 (def gen-precip-step #(* (Math/pow 2 %) 62.5))
@@ -17,6 +26,8 @@
 
 (def nearest-temp #(util/nearest sorted-temps %))
 (def nearest-precip #(util/nearest sorted-precips %))
+
+(def tr temperature/tr)
 
 (def biomes (map-io/read-edn "001-mercator-biomes"))
 (def biomes-indexed (map-indexed vector biomes))
@@ -46,10 +57,66 @@
                    biomes-temp-indexed)))
 
 (defn nearest
-  [precip temp]
+  [mm-precip kelvin-temp]
   (nth biomes
-       (get temp-precip->biome-index [(nearest-precip precip)
-                                      (nearest-temp temp)])))
+       (get temp-precip->biome-index [(nearest-precip mm-precip)
+                                      (nearest-temp kelvin-temp)])))
+
+(defn prep-biome-image
+  [im]
+  (new BufferedImage
+       (map-io/width im)
+       (map-io/height im)
+       BufferedImage/TYPE_BYTE_INDEXED
+       (.getColorModel im)))
+
+(defn set-biome-pixel!
+  "Read a pixel from a temperature image, get its RGB values, and lookup the
+  temperature for that pixel. Do the same for precipitation. Convert each color
+  to its respective temperature and precipitation value. Use these to perform a
+  biome lookup, extract the color for that biome, and then add the pixel with
+  the new biome data to the biome image."
+  [temp-im precip-im biome-im [x y]]
+  (let [temp (scaled-temp/coord->temperature tr temp-im x y)
+        precip-mils (scales/coord->precipitation precip-im x y)
+        precip (precipitation/mils->mm precip-mils)
+        biome (nearest precip temp)
+        biome-pixel (util/hex->rgb-pixel (:color biome))]
+    (log/debugf
+      "Got precip, temp, and biome: [%s %s] -> [%s %s] = %s %s" precip temp
+      (nearest-precip precip) (nearest-temp temp)
+      (util/hex->ansi (:color biome)) (:name biome))
+    (try
+      (map-io/set-rgb biome-im x y biome-pixel)
+      (catch Exception ex
+        (log/error ex)
+        (log/errorf
+          (str "At position [%s, %s] couldn't process "
+               "precip, temp, or biome ([%s, %s] = %s)")
+          x
+          y
+          precip
+          temp
+          (:color biome))))))
+
+(defn create-image
+  "This function reads pixel data for temperature and precipitation from two
+  files, then creates a new file with colors derived from these and the biomes
+  lookup data."
+  []
+  (let [temp-im (temperature/read-adjusted-temperature)
+        precip-im (precipitation/read-precipitation)
+        biome-colors-im (map-io/read-png biomes-colorspace-file)
+        biome-im (prep-biome-image biome-colors-im)
+        x-max (map-io/width temp-im)
+        y-max (map-io/height temp-im)]
+    (doall
+      (for [x (range x-max)
+            y (range y-max)]
+        (set-biome-pixel! temp-im precip-im biome-im [x y])))
+    (map-io/write
+      biome-im
+      (format (str "resources/" map-io/png-format) biomes-file))))
 
 (defn print-colors-row
   [row]

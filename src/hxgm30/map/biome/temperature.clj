@@ -4,11 +4,10 @@
     [hxgm30.map.biome.elevation :as elevation]
     [hxgm30.map.io :as map-io]
     [hxgm30.map.scales :as scales]
+    [hxgm30.map.scales.temperature :as scaled-temp]
     [taoensso.timbre :as log])
   (:import
-    (java.awt.image BufferedImage)
-    (java.io File)
-    (javax.imageio ImageIO)))
+    (java.awt.image BufferedImage)))
 
 (def K 273.15)
 (def temperature-zone-height 1406.0)
@@ -21,10 +20,15 @@
 
 (def temperature-file "001-mercator-offset-temperature")
 (def elev-temp-file "001-mercator-offset-elevation-temperature")
+(def tr (scaled-temp/new-linear-range))
 
 (defn read-temperature
   []
   (map-io/read-png temperature-file))
+
+(defn read-adjusted-temperature
+  []
+  (map-io/read-png elev-temp-file))
 
 (defn prep-adjusted-elevation
   [im]
@@ -44,13 +48,13 @@
   pixel with the adjusted temperature data to the adjusted image."
   [temp-im elev-im adj-im [x y]]
   (let [temp-pixel (map-io/rgb temp-im x y)
-        temp (scales/coord->temperature temp-im x y)
+        temp (scaled-temp/coord->temperature tr temp-im x y)
         elev (scales/coord->elevation elev-im x y)]
     (try
       (if (< elev temperature-zone-height)
         (map-io/set-rgb adj-im x y temp-pixel)
         (let [adj-temp (alt-adjust-average-temp temp elev)
-              new-temp-pixel (scales/temperature->pixel adj-temp)]
+              new-temp-pixel (scaled-temp/temperature->pixel tr adj-temp)]
           (map-io/set-rgb adj-im x y new-temp-pixel)))
       (catch Exception ex
         (log/debugf
