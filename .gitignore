@@ -2,6 +2,13 @@
 /target
 /classes
 /checkouts
+/docs/research/*/*.svg
+/resources/planets/*.bmp
+/resources/planets/*.af*
+/resources/planets/*.tif*
+/resources/planets/*.xcf
+/resources/planets/*.ter
+/resources/planets/*wonderdraft*
 pom.xml
 pom.xml.asc
 *.jar
