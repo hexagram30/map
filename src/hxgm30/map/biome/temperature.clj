@@ -1,10 +1,9 @@
 (ns hxgm30.map.biome.temperature
   (:require
-    [clojure.java.io :as io]
     [hxgm30.map.biome.elevation :as elevation]
     [hxgm30.map.io :as map-io]
-    [hxgm30.map.scales :as scales]
-    [hxgm30.map.scales.temperature :as scaled-temp]
+    [hxgm30.map.scales.elevation :as elev-scale]
+    [hxgm30.map.scales.temperature :as temp-scale]
     [taoensso.timbre :as log])
   (:import
     (java.awt.image BufferedImage)))
@@ -21,7 +20,7 @@
 (def temperature-file "ilunao/temperature")
 (def temperature-tiny-file "ilunao/temperature-tiny")
 (def elev-temp-file "ilunao/elevation-temperature")
-(def tr (scaled-temp/new-range :sine))
+(def tr (temp-scale/new-range :sine))
 
 (defn read-temperature
   []
@@ -50,13 +49,13 @@
   pixel with the adjusted temperature data to the adjusted image."
   [temp-im elev-im adj-im [x y]]
   (let [temp-pixel (map-io/rgb temp-im x y)
-        temp (scaled-temp/coord->temperature tr temp-im x y)
-        elev (scales/coord->elevation elev-im x y)]
+        temp (temp-scale/coord->temperature tr temp-im x y)
+        elev (elev-scale/coord->elevation elev-im x y)]
     (try
       (if (< elev temperature-zone-height)
         (map-io/set-rgb adj-im x y temp-pixel)
         (let [adj-temp (alt-adjust-average-temp temp elev)
-              new-temp-pixel (scaled-temp/temperature->pixel tr adj-temp)]
+              new-temp-pixel (temp-scale/temperature->pixel tr adj-temp)]
           (map-io/set-rgb adj-im x y new-temp-pixel)))
       (catch Exception ex
         (log/debugf
