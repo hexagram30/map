@@ -233,8 +233,8 @@
 
 (def sine-range-behaviour
   (assoc common-behaviour
-    :get-normalized-min #(:normalized-min %)
-    :get-normalized-max #(:normalized-max %)
+    :get-normalized-min :normalized-min
+    :get-normalized-max :normalized-max
     :get-normalized-range #(- (:normalized-max %) (:normalized-min %))
     :get-ticks-per-range sine-ticks-per-range
     :get-ticks sine-ticks
