@@ -6,7 +6,8 @@
    [hxgm30.map.util :as util]
    [taoensso.timbre :as log])
   (:import
-    (org.apache.commons.math3.util FastMath)))
+   (clojure.lang Keyword)
+   (org.apache.commons.math3.util FastMath)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Constants   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -68,28 +69,12 @@
        (map vec)
        (into {})))
 
-;;(def temperature-lookup
-;;  (memoize
-;;   (fn []
-;;     (->> (scales-util/lookup-grouping
-;;           (temperature-colors) (temperature-ranges) {:rev? true})
-;;          (map vec)
-;;          (into {})))))
-
 (defn -reverse-lookup
   [this]
   (->> (scales-util/lookup-grouping
         (temperature-colors) (get-ranges this) {:rev? true})
        (map (comp vec reverse))
        (into {})))
-
-;;(def temperature-rev-lookup
-;;  (memoize
-;;   (fn []
-;;     (->> (scales-util/lookup-grouping
-;;           (temperature-colors) (temperature-ranges) {:rev? true})
-;;          (map (comp vec reverse))
-;;          (into {})))))
 
 (defn -check-limits
   [this kelvin]
@@ -179,6 +164,10 @@
   (float (/ (- (get-max this) (get-min this))
             (dec temperature-count))))
 
+(defn linear-ticks
+  [this]
+  (sort (vec (set (flatten (get-ranges this))))))
+
 (defn linear-ranges
   [this]
   (scales-util/get-ranges
@@ -190,7 +179,7 @@
          :get-normalized-max (:get-max common-behaviour)
          :get-normalized-range (:get-range common-behaviour)
          :get-ticks-per-range linear-ticks-per-range
-         :get-ticks (fn [_] :not-implemented)
+         :get-ticks linear-ticks
          :get-ranges linear-ranges))
 
 (extend LinearTemperatureRange
@@ -206,25 +195,56 @@
 ;;;   Sine-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;(defrecord SineTemperatureRange
-;;  [normalized-min normalized-max]
-;;  ScaledRange
-;;  )
-;;
-;;(defn new-sin-temp-range
-;;  []
-;;  (map->SineTemperatureRange {
-;;                              :normalized-min (/ Math/PI -4)
-;;                              :normalized-max (/ Math/PI 4)}))
-;;
-;;(def min-distrib (/ Math/PI -4))
-;;(def max-distrib (/ Math/PI 4))
-;;(def distrib-range (- max-distrib min-distrib))
-;;(def ticks-per-range (/ distrib-range (dec (/ temperature-count 2))))
-;;(def xs
-;;  (butlast
-;;   (map #(* (Math/sin (- distrib-range (* ticks-per-range %))))
-;;        (range temperature-count))))
+(defrecord SineTemperatureRange
+  [normalized-min normalized-max])
+
+(defn sine-ticks-per-range
+  [this]
+  (float (/ (get-normalized-range this)
+            (/ temperature-count 2))))
+
+(defn sine-ticks
+  [this]
+  (conj
+   (reverse
+    (map #(* (Math/sin (- (get-normalized-range this) (* (get-ticks-per-range this) %))))
+         (range temperature-count)))
+   -1))
+
+(defn sine->temp
+  [this s]
+  (+ (- (get-max this) (get-mean this))
+     (* (get-mean this) s)))
+
+
+(defn sine-normalized-ranges
+  [this]
+  (let [xs (get-ticks this)]
+    (partition 2 (interleave (butlast xs) (rest xs)))))
+
+(defn sine-ranges
+  [this]
+  (map (fn [[x y]]
+         [(sine->temp this x) (sine->temp this y)])
+       (sine-normalized-ranges this)))
+
+(def sine-range-behaviour
+  (assoc common-behaviour
+    :get-normalized-min #(:normalized-min %)
+    :get-normalized-max #(:normalized-max %)
+    :get-normalized-range #(- (:normalized-max %) (:normalized-min %))
+    :get-ticks-per-range sine-ticks-per-range
+    :get-ticks sine-ticks
+    :get-ranges sine-ranges))
+
+(extend SineTemperatureRange
+  ScaledRange
+  sine-range-behaviour)
+
+(defn new-sine-range
+  []
+  (map->SineTemperatureRange {:normalized-min (/ Math/PI -4)
+                              :normalized-max (/ Math/PI 4)}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Tangent-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -288,6 +308,13 @@
 ;;           (map #(+ (- temperature-max temperature-mean)
 ;;                    (* temperature-mean %)) range)))
 ;;        (partition 2 (interleave (butlast xs) (rest xs))))))
+
+(defn new-range
+  [^Keyword type]
+  (case type
+    :linear (new-linear-range)
+    :sine (new-sine-range)
+    :unsupported-temperature-range-type))
 
 (comment
  (temperature-ranges)

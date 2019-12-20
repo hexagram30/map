@@ -89,6 +89,8 @@
   (biome/print-legend)
   (biome/create-image)
   (scaled-temp/print-colors biome-temp/tr)
+  (new-range :sine)
+  (scaled-temp/get-ticks (new-range :sine))
   )
 
 (comment
