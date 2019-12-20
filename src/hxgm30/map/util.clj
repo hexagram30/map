@@ -218,7 +218,8 @@
               {:red (nth x 0)
                :green (nth x 1)
                :blue (nth x 2)})))
-       (print-gimp-palette name)))
+       (print-gimp-palette name))
+  :ok)
 
 (def clj-hex->html (comp #(str "#" %) #(subs % 2 8)))
 

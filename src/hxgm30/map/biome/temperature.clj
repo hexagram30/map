@@ -19,16 +19,18 @@
   (- kelvin-temp (* 5.6 (/ m-elevation temperature-zone-height))))
 
 (def temperature-file "001-mercator-offset-temperature")
+(def temperature-tiny-file "001-mercator-offset-temperature-tiny")
 (def elev-temp-file "001-mercator-offset-elevation-temperature")
-(def tr (scaled-temp/new-linear-range))
+(def tr (scaled-temp/new-range :sine))
 
 (defn read-temperature
   []
   (map-io/read-png temperature-file))
 
-(defn read-adjusted-temperature
-  []
-  (map-io/read-png elev-temp-file))
+;;(defn read-adjusted-temperature
+;;  []
+;;  (map-io/read-png elev-temp-file))
+(def read-adjusted-temperature read-temperature)
 
 (defn prep-adjusted-elevation
   [im]

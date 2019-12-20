@@ -38,6 +38,7 @@
     [org.apache.commons/commons-math3 "3.6.1"]
     [org.clojure/clojure "1.10.1"]
     [org.clojure/data.avl "0.1.0"]
+    [org.flatland/ordered "1.5.7"]
     [trystan/delaunay-triangulation "1.0.1"]
     [trystan/voronoi-diagram "1.0.0"]]
   :profiles {

@@ -13,11 +13,14 @@
 ;;;   Constants   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def temperature-min 246) ; in degrees C/K
-(def temperature-max 316) ; in degrees C/K
+(def temperature-min 222) ; in degrees C/K
+;;(def temperature-min 246) ; in degrees C/K
+;;(def temperature-min 252) ; in degrees C/K
+;;(def temperature-max 316) ; in degrees C/K
+(def temperature-max 306) ; in degrees C/K
 (def temperature-range (- temperature-max temperature-min))
 (def temperature-mean (/ temperature-range 2))
-(def temperature-file "001-temperature-scale-hex2")
+(def temperature-file "001-temperature-scale-hex3")
 (def temperature (scales-util/read-scale-txt temperature-file))
 (def temperature-colors
   (memoize

@@ -6,6 +6,7 @@
 (def mm-in-mils 0.0254)
 
 (def precipitation-file "001-mercator-offset-precipitation")
+(def precipitation-tiny-file "001-mercator-offset-precipitation-tiny")
 
 (defn read-precipitation
   []
