@@ -11,10 +11,10 @@
   (:import
     (java.awt.image BufferedImage)))
 
-(def biomes-colorspace-file "001-mercator-biomes-colors")
-(def biomes-file "001-mercator-offset-biomes")
-(def biomes-colorspace-tiny-file "001-mercator-biomes-colors-tiny")
-(def biomes-tiny-file "001-mercator-offset-biomes-tiny")
+(def biomes-colorspace-file "ilunao/biomes-colors")
+(def biomes-file "ilunao/biomes")
+(def biomes-colorspace-tiny-file "ilunao/biomes-colors-tiny")
+(def biomes-tiny-file "ilunao/biomes-tiny")
 
 (def gen-temp-step #(+ temperature/K (* (Math/pow 2 %) 1.5)))
 (def gen-precip-step #(* (Math/pow 2 %) 62.5))
@@ -31,7 +31,7 @@
 
 (def tr temperature/tr)
 
-(def biomes (map-io/read-edn "001-mercator-biomes"))
+(def biomes (map-io/read-edn "ilunao/biomes"))
 (def biomes-indexed (map-indexed vector biomes))
 (def biomes-matrix [
   [ 0  0  0  0  0  0  0  0  0]

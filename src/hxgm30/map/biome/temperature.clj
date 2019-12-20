@@ -18,9 +18,9 @@
   [kelvin-temp m-elevation]
   (- kelvin-temp (* 5.6 (/ m-elevation temperature-zone-height))))
 
-(def temperature-file "001-mercator-offset-temperature")
-(def temperature-tiny-file "001-mercator-offset-temperature-tiny")
-(def elev-temp-file "001-mercator-offset-elevation-temperature")
+(def temperature-file "ilunao/temperature")
+(def temperature-tiny-file "ilunao/temperature-tiny")
+(def elev-temp-file "ilunao/elevation-temperature")
 (def tr (scaled-temp/new-range :sine))
 
 (defn read-temperature

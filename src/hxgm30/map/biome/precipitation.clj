@@ -5,8 +5,8 @@
 
 (def mm-in-mils 0.0254)
 
-(def precipitation-file "001-mercator-offset-precipitation")
-(def precipitation-tiny-file "001-mercator-offset-precipitation-tiny")
+(def precipitation-file "ilunao/precipitation")
+(def precipitation-tiny-file "ilunao/precipitation-tiny")
 
 (defn read-precipitation
   []
