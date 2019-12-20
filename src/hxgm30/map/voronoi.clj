@@ -41,7 +41,7 @@
     d-data))
 
 (comment
-  (def i (map-io/read-planet "001-mercator-bump-black-sea-crop-small"))
+  (def i (map-io/read-planet "ilunao/bump-black-sea-crop-small"))
   (def ps (util/rand-points i 500))
   (def vs (voronoi/image-partition i ps))
 

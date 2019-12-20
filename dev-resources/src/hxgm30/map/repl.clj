@@ -94,7 +94,7 @@
   )
 
 (comment
-  (def filename "001-mercator-bump-black-sea-crop-small")
+  (def filename "ilunao/bump-black-sea-crop-small")
   (def i (map-io/read-planet filename))
   (def d (map-io/data i))
   )

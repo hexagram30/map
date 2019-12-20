@@ -82,7 +82,7 @@
          :point)))
 
 (comment
-  (def i (map-io/read-planet "001-mercator-bump-black-sea-crop-small"))
+  (def i (map-io/read-planet "ilunao/bump-black-sea-crop-small"))
   (def new-bmp (map-io/new-bmp (map-io/width i)
                                (map-io/height i)))
   (def start [150 170])

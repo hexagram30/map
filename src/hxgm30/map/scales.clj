@@ -15,7 +15,7 @@
 
 (def elevation-min 0) ; in strides (~2 leagues or ~7 miles)
 (def elevation-max units/highest-mountain) ; in strides (~2 leagues or ~7 miles)
-(def elevation-file "001-mercator-elevation-scale-hex")
+(def elevation-file "ilunao/elevation-scale-hex")
 (def elevation (scales-util/read-scale-txt elevation-file))
 (def elevation-colors
   (memoize
@@ -101,7 +101,7 @@
 
 (def precipitation-min 0) ; in mils/year (~4500 mm/yr)
 (def precipitation-max 640000) ; in mils/year, ~12,000 mil/week (~16,000 mm/yr)
-(def precipitation-file "001-mercator-precipitation-scale-hex")
+(def precipitation-file "ilunao/precipitation-scale-hex")
 (def precipitation (scales-util/read-scale-txt precipitation-file))
 (def precipitation-colors
   (memoize

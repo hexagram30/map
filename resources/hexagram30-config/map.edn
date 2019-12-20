@@ -118,10 +118,10 @@
      :max-latitude 82  ; degrees N
      :min-latidude -82 ; degrees N
      }
-   :altitude "001-sinusoidal-altitude"
-   :biomes "001-sinusoidal-biomes"
-   :ls "001-sinusoidal-ls"
-   :lsi "001-sinusoidal-lsi"
+   :altitude "ilunao/sinusoidal-altitude"
+   :biomes "ilunao/sinusoidal-biomes"
+   :ls "ilunao/sinusoidal-ls"
+   :lsi "ilunao/sinusoidal-lsi"
    :pixels {
      ;; With the default values of 1600x1020, one pixel is approximately the
      ;; area of a city whose size is between that of Chicago and El Paso,
