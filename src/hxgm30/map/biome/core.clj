@@ -13,6 +13,8 @@
 
 (def biomes-colorspace-file "001-mercator-biomes-colors")
 (def biomes-file "001-mercator-offset-biomes")
+(def biomes-colorspace-tiny-file "001-mercator-biomes-colors-tiny")
+(def biomes-tiny-file "001-mercator-offset-biomes-tiny")
 
 (def gen-temp-step #(+ temperature/K (* (Math/pow 2 %) 1.5)))
 (def gen-precip-step #(* (Math/pow 2 %) 62.5))
@@ -103,20 +105,29 @@
   "This function reads pixel data for temperature and precipitation from two
   files, then creates a new file with colors derived from these and the biomes
   lookup data."
+  ([]
+   (create-image (temperature/read-adjusted-temperature)
+                 (precipitation/read-precipitation)
+                 (map-io/read-png biomes-colorspace-file)
+                 biomes-file))
+  ([temp-im precip-im biome-colors-im outfile]
+   (let [biome-im (prep-biome-image biome-colors-im)
+         x-max (map-io/width temp-im)
+         y-max (map-io/height temp-im)]
+     (doall
+       (for [x (range x-max)
+             y (range y-max)]
+         (set-biome-pixel! temp-im precip-im biome-im [x y])))
+     (map-io/write
+       biome-im
+       (format (str "resources/" map-io/png-format) outfile)))))
+
+(defn create-tiny-image
   []
-  (let [temp-im (temperature/read-adjusted-temperature)
-        precip-im (precipitation/read-precipitation)
-        biome-colors-im (map-io/read-png biomes-colorspace-file)
-        biome-im (prep-biome-image biome-colors-im)
-        x-max (map-io/width temp-im)
-        y-max (map-io/height temp-im)]
-    (doall
-      (for [x (range x-max)
-            y (range y-max)]
-        (set-biome-pixel! temp-im precip-im biome-im [x y])))
-    (map-io/write
-      biome-im
-      (format (str "resources/" map-io/png-format) biomes-file))))
+    (create-image (map-io/read-png temperature/temperature-tiny-file)
+                  (map-io/read-png precipitation/precipitation-tiny-file)
+                  (map-io/read-png biomes-colorspace-tiny-file)
+                  biomes-tiny-file))
 
 (defn print-colors-row
   [row]

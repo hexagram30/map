@@ -3,7 +3,8 @@
     [clojure.edn :as edn]
     [clojure.java.io :as io]
     [clojure.string :as string]
-    [hxgm30.map.util :as util])
+    [hxgm30.map.util :as util]
+    [flatland.ordered.set :refer [ordered-set]])
   (:import
     (clojure.lang Keyword)
     (java.awt.image BufferedImage)
@@ -137,6 +138,8 @@
   (tile-width [this])
   (unique-hex-colors [this])
   (unique-rgb-colors [this])
+  (unique-hex-row-colors [this])
+  (unique-rgb-row-colors [this])
   (x-tiles-count [this]
     "Returns the number of tiles in the x direction.")
   (y-tiles-count [this]
@@ -189,9 +192,27 @@
 
 (defn -unique-hex-colors
   [this]
-  (def hex-vals (->> (-unique-rgb-colors this)
-                     (mapv util/rgb-pixel->hex)
-                     (into #{}))))
+  (->> (-unique-rgb-colors this)
+       (mapv util/rgb-pixel->hex)
+       (into #{})))
+
+(defn -unique-rgb-row-colors
+  "Reading x-pixel at a time, across a single y-pixel row, collect the unique
+  set of RGB colors, maintained in insertion order."
+  ([this]
+   (-unique-rgb-row-colors this (int (/ (height this) 2))))
+  ([this row]
+   (->> (range (width this))
+        (map #(rgb this % row))
+        (into (ordered-set)))))
+
+(defn -unique-hex-row-colors
+  ([this]
+   (-unique-hex-row-colors this (int (/ (height this) 2))))
+  ([this row]
+   (->> (-unique-rgb-row-colors this row)
+        (mapv util/rgb-pixel->hex)
+        (into (ordered-set)))))
 
 (def bmp-behaviour
   {:all-pixels -get-all-pixels
@@ -213,6 +234,8 @@
    :tile-width #(.getTileWidth %)
    :unique-hex-colors -unique-hex-colors
    :unique-rgb-colors -unique-rgb-colors
+   :unique-rgb-row-colors -unique-rgb-row-colors
+   :unique-hex-row-colors -unique-hex-row-colors
    :x-tiles-count #(.getNumXTiles %)
    :y-tiles-count #(.getNumYTiles %)})
 
