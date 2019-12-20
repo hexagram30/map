@@ -1,6 +1,5 @@
 (ns hxgm30.map.biome.precipitation
   (:require
-    [clojure.java.io :as io]
     [hxgm30.map.io :as map-io]))
 
 (def mm-in-mils 0.0254)
