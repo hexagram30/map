@@ -29,7 +29,7 @@
 (def nearest-temp #(util/nearest sorted-temps %))
 (def nearest-precip #(util/nearest sorted-precips %))
 
-(def tr temperature/tr)
+(def ts temperature/ts)
 
 (def biomes (map-io/read-edn "ilunao/biomes"))
 (def biomes-indexed (map-indexed vector biomes))
@@ -79,7 +79,7 @@
   biome lookup, extract the color for that biome, and then add the pixel with
   the new biome data to the biome image."
   [temp-im precip-im biome-im [x y]]
-  (let [temp (temp-scale/coord->temperature tr temp-im x y)
+  (let [temp (temp-scale/coord->temperature ts temp-im x y)
         precip-mils (precip-scale/coord->precipitation precip-im x y)
         precip (precipitation/mils->mm precip-mils)
         biome (nearest precip temp)

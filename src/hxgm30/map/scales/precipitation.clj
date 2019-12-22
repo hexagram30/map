@@ -95,3 +95,7 @@
   (-> milyr
       color
       util/color-map->rgb-pixel))
+
+(defn new-range
+  [_]
+  :not-implemented)
