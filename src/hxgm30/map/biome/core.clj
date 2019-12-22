@@ -30,6 +30,7 @@
 (def nearest-precip #(util/nearest sorted-precips %))
 
 (def ts temperature/ts)
+(def ps precipitation/ps)
 
 (def biomes (map-io/read-edn "ilunao/biomes"))
 (def biomes-indexed (map-indexed vector biomes))
@@ -80,7 +81,7 @@
   the new biome data to the biome image."
   [temp-im precip-im biome-im [x y]]
   (let [temp (temp-scale/coord->temperature ts temp-im x y)
-        precip-mils (precip-scale/coord->precipitation precip-im x y)
+        precip-mils (precip-scale/coord->precipitation ps precip-im x y)
         precip (precipitation/mils->mm precip-mils)
         biome (nearest precip temp)
         biome-pixel (util/hex->rgb-pixel (:color biome))]
