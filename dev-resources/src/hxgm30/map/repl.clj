@@ -17,6 +17,7 @@
     [hxgm30.map.components.layers :as layers]
     [hxgm30.map.io :as map-io]
     [hxgm30.map.row :as row]
+    [hxgm30.map.scales.core :as scales]
     [hxgm30.map.scales.elevation :as elev-scale]
     [hxgm30.map.scales.precipitation :as precip-scale]
     [hxgm30.map.scales.temperature :as temp-scale]
@@ -89,9 +90,9 @@
   (biome/print-colors-matrix)
   (biome/print-legend)
   (biome/create-image)
-  (temp-scale/print-colors biome-temp/tr)
-  (new-range :sine)
-  (temp-scale/get-ticks (new-range :sine))
+  (scales/print-colors biome-temp/tr)
+  (def ts (scales/new-scale :temperature :sine))
+  (scales/get-ticks ts)
   )
 
 (comment

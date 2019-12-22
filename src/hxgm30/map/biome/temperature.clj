@@ -2,6 +2,7 @@
   (:require
     [hxgm30.map.biome.elevation :as elevation]
     [hxgm30.map.io :as map-io]
+    [hxgm30.map.scales.core :as scales]
     [hxgm30.map.scales.elevation :as elev-scale]
     [hxgm30.map.scales.temperature :as temp-scale]
     [taoensso.timbre :as log])
@@ -20,7 +21,7 @@
 (def temperature-file "ilunao/temperature")
 (def temperature-tiny-file "ilunao/temperature-tiny")
 (def elev-temp-file "ilunao/elevation-temperature")
-(def tr (temp-scale/new-range :sine))
+(def ts (scales/new-scale :temperature :sine))
 
 (defn read-temperature
   []
@@ -49,13 +50,13 @@
   pixel with the adjusted temperature data to the adjusted image."
   [temp-im elev-im adj-im [x y]]
   (let [temp-pixel (map-io/rgb temp-im x y)
-        temp (temp-scale/coord->temperature tr temp-im x y)
+        temp (temp-scale/coord->temperature ts temp-im x y)
         elev (elev-scale/coord->elevation elev-im x y)]
     (try
       (if (< elev temperature-zone-height)
         (map-io/set-rgb adj-im x y temp-pixel)
         (let [adj-temp (alt-adjust-average-temp temp elev)
-              new-temp-pixel (temp-scale/temperature->pixel tr adj-temp)]
+              new-temp-pixel (temp-scale/temperature->pixel ts adj-temp)]
           (map-io/set-rgb adj-im x y new-temp-pixel)))
       (catch Exception ex
         (log/debugf
