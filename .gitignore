@@ -18,3 +18,4 @@ pom.xml.asc
 /.eastwood
 /kafka
 *.DS_Store
+/old-resources
