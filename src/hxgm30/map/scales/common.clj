@@ -4,6 +4,33 @@
    [hxgm30.map.scales.util :as scales-util])
   (:refer-clojure :exclude [get-ranges]))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Common Linear   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn linear-ticks-per-range
+  [this]
+  (float (/ (- (:max this) (:min this))
+            (dec (:color-count this)))))
+
+(defn linear-ranges
+  [this]
+  (scales-util/get-ranges
+   (:min this) (:max this) (linear-ticks-per-range this)))
+
+(defn linear-ticks
+  [this]
+  (sort (vec (set (flatten (linear-ranges this))))))
+
+(def linear-behaviour
+  {:get-ticks-per-range linear-ticks-per-range
+   :get-ticks linear-ticks
+   :get-ranges linear-ranges})
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Common   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn normalized-range
   [this]
   (- (:normalized-max this)
@@ -55,6 +82,10 @@
    :check-limits check-limits
    :find-range find-range
    :get-color get-color})
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn print-colors
   [this print-fn step]

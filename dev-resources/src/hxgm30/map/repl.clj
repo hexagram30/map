@@ -93,6 +93,8 @@
   (scales/print-colors biome-temp/tr)
   (def ts (scales/new-scale :temperature :sine))
   (scales/get-ticks ts)
+  (def ps (scales/new-scale :precipitation :linear))
+  (scales/get-ticks ps)
   )
 
 (comment

@@ -102,28 +102,11 @@
    range
    ranges])
 
-(defn linear-ticks-per-range
-  [this]
-  (float (/ (- (:max this) (:min this))
-            (dec (:color-count this)))))
-
-(defn linear-ranges
-  [this]
-  (scales-util/get-ranges
-   (:min this) (:max this) (linear-ticks-per-range this)))
-
-(defn linear-ticks
-  [this]
-  (sort (vec (set (flatten (linear-ranges this))))))
-
 (def linear-range-behaviour
-  (assoc common/behaviour
+  (assoc (merge common/behaviour common/linear-behaviour)
          :get-normalized-min :normalized-min
          :get-normalized-max :normalized-max
          :get-normalized-range :normalized-range
-         :get-ticks-per-range linear-ticks-per-range
-         :get-ticks linear-ticks
-         :get-ranges linear-ranges
          :print-colors print-colors))
 
 (defn new-linear-range
@@ -133,7 +116,7 @@
                                          :normalized-min temperature-min
                                          :normalized-max temperature-max))
         r2 (assoc r1 :normalized-range (common/normalized-range r1))]
-    (assoc r2 :ranges (linear-ranges r2))))
+    (assoc r2 :ranges (common/linear-ranges r2))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Sine-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -190,15 +173,6 @@
     :get-ticks sine-ticks
     :get-ranges sine-ranges
     :print-colors print-colors))
-
-(defn new-sine-range
-  []
-  (let [r1 (map->SineTemperatureRange (assoc
-                                      (temperature-range-data)
-                                       :normalized-min (/ Math/PI -4)
-                                       :normalized-max (/ Math/PI 4)))
-        r2 (assoc r1 :normalized-range (common/normalized-range r1))]
-    (assoc r2 :ranges (sine-ranges r2))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Tangent-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -262,6 +236,28 @@
 ;;           (map #(+ (- temperature-max temperature-mean)
 ;;                    (* temperature-mean %)) range)))
 ;;        (partition 2 (interleave (butlast xs) (rest xs))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Constructors   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn new-linear-range
+  []
+  (let [r1 (map->LinearTemperatureRange (assoc
+                                         (temperature-range-data)
+                                          :normalized-min temperature-min
+                                          :normalized-max temperature-max))
+        r2 (assoc r1 :normalized-range (common/normalized-range r1))]
+    (assoc r2 :ranges (common/linear-ranges r2))))
+
+(defn new-sine-range
+  []
+  (let [r1 (map->SineTemperatureRange (assoc
+                                       (temperature-range-data)
+                                        :normalized-min (/ Math/PI -4)
+                                        :normalized-max (/ Math/PI 4)))
+        r2 (assoc r1 :normalized-range (common/normalized-range r1))]
+    (assoc r2 :ranges (sine-ranges r2))))
 
 (defn new-range
   [^Keyword type]

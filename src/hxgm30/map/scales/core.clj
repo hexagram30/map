@@ -3,6 +3,7 @@
    [hxgm30.map.scales.precipitation :as precipitation]
    [hxgm30.map.scales.temperature :as temperature])
   (:import
+   (hxgm30.map.scales.precipitation LinearPrecipitationRange)
    (hxgm30.map.scales.temperature LinearTemperatureRange
                                   SineTemperatureRange)))
 
@@ -66,7 +67,13 @@
 ;;;   Precipitation Implementations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; TBD
+(extend LinearPrecipitationRange
+        PrecipitationRange
+        precipitation/linear-range-behaviour)
+
+(extend LinearPrecipitationRange
+        ScaledRange
+        precipitation/scaled-range-behaviour)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   General Constructor   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
