@@ -43,6 +43,10 @@
      :normalized-max temperature-max
      :range r}))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Shared Temperature Methods   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn print-color
   [this kelvin]
   (println (str (format "%,-3d K (%,3d F): "
@@ -82,7 +86,7 @@
        ((fn [x] (log/trace "Color map:" x) x))
        util/color-map->rgb-pixel))
 
-(def scaled-range-behaviour
+(def temperature-range-behaviour
   {:temperature-amount temperature-amount
    :coord->temperature coord->temperature
    :temperature->pixel temperature->pixel})
@@ -244,21 +248,21 @@
 
 (defn new-linear-range
   []
-  (let [r1 (map->LinearTemperatureRange (assoc
-                                         (temperature-range-data)
-                                          :normalized-min temperature-min
-                                          :normalized-max temperature-max))
+  (let [r1 (assoc (temperature-range-data)
+             :normalized-min temperature-min
+             :normalized-max temperature-max)
         r2 (assoc r1 :normalized-range (common/normalized-range r1))]
-    (assoc r2 :ranges (common/linear-ranges r2))))
+    (map->LinearTemperatureRange
+     (assoc r2 :ranges (common/linear-ranges r2)))))
 
 (defn new-sine-range
   []
-  (let [r1 (map->SineTemperatureRange (assoc
-                                       (temperature-range-data)
-                                        :normalized-min (/ Math/PI -4)
-                                        :normalized-max (/ Math/PI 4)))
+  (let [r1 (assoc (temperature-range-data)
+             :normalized-min (/ Math/PI -4)
+             :normalized-max (/ Math/PI 4))
         r2 (assoc r1 :normalized-range (common/normalized-range r1))]
-    (assoc r2 :ranges (sine-ranges r2))))
+    (map->SineTemperatureRange
+     (assoc r2 :ranges (sine-ranges r2)))))
 
 (defn new-range
   [^Keyword type]

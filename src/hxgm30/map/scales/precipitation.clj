@@ -24,8 +24,9 @@
 
 (defn precipitation-colors
   []
-  (scales-util/scale-colors-txt
-   (scales-util/read-scale-txt precipitation-file)))
+  (reverse
+   (scales-util/scale-colors-txt
+    (scales-util/read-scale-txt precipitation-file))))
 
 (defn precipitation-range-data
   []
@@ -75,10 +76,10 @@
         (common/get-color this)
         util/color-map->rgb-pixel))
 
-  (def scaled-range-behaviour
-    {:temperature-amount precipitation-amount
-     :coord->temperature coord->precipitation
-     :temperature->pixel precipitation->pixel})
+  (def precipitation-range-behaviour
+    {precipitation-amount precipitation-amount
+     coord->precipitation coord->precipitation
+     precipitation->pixel precipitation->pixel})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Linear Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -109,12 +110,12 @@
 
 (defn new-linear-range
   []
-  (let [r1 (map->LinearPrecipitationRange (assoc
-                                          (precipitation-range-data)
-                                           :normalized-min precipitation-min
-                                           :normalized-max precipitation-max))
+  (let [r1 (assoc (precipitation-range-data)
+             :normalized-min precipitation-min
+             :normalized-max precipitation-max)
         r2 (assoc r1 :normalized-range (common/normalized-range r1))]
-    (assoc r2 :ranges (common/linear-ranges r2))))
+    (map->LinearPrecipitationRange
+     (assoc r2 :ranges (common/linear-ranges r2)))))
 
 (defn new-range
   [^Keyword type]

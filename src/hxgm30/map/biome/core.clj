@@ -4,6 +4,7 @@
     [hxgm30.map.biome.precipitation :as precipitation]
     [hxgm30.map.biome.temperature :as temperature]
     [hxgm30.map.io :as map-io]
+    [hxgm30.map.scales.core :as scales]
     [hxgm30.map.scales.precipitation :as precip-scale]
     [hxgm30.map.scales.temperature :as temp-scale]
     [hxgm30.map.util :as util]
@@ -80,8 +81,8 @@
   biome lookup, extract the color for that biome, and then add the pixel with
   the new biome data to the biome image."
   [temp-im precip-im biome-im [x y]]
-  (let [temp (temp-scale/coord->temperature ts temp-im x y)
-        precip-mils (precip-scale/coord->precipitation ps precip-im x y)
+  (let [temp (scales/coord->temperature ts temp-im x y)
+        precip-mils (scales/coord->precipitation ps precip-im x y)
         precip (precipitation/mils->mm precip-mils)
         biome (nearest precip temp)
         biome-pixel (util/hex->rgb-pixel (:color biome))]
