@@ -28,9 +28,9 @@
   (get-ranges [this])
   (lookup [this])
   (reverse-lookup [this])
-  (check-limits [this kelvin])
-  (find-range [this kelvin])
-  (get-color [this kelvin])
+  (check-limits [this value])
+  (find-range [this value])
+  (get-color [this value])
   (print-colors [this] [this step]))
 
 (defprotocol TemperatureRange
@@ -41,39 +41,27 @@
 (defprotocol PrecipitationRange
   (precipitation-amount [this color-map])
   (coord->precipitation [this im x y])
-  (precipitation->pixel [this kelvin]))
+  (precipitation->pixel [this milyr]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Temperature Implementations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (extend LinearTemperatureRange
-        TemperatureRange
-        temperature/linear-range-behaviour)
-
-(extend LinearTemperatureRange
-        ScaledRange
-        temperature/scaled-range-behaviour)
+  TemperatureRange temperature/temperature-range-behaviour
+  ScaledRange temperature/linear-range-behaviour)
 
 (extend SineTemperatureRange
-        TemperatureRange
-        temperature/sine-range-behaviour)
-
-(extend SineTemperatureRange
-        ScaledRange
-        temperature/scaled-range-behaviour)
+  TemperatureRange temperature/temperature-range-behaviour
+  ScaledRange temperature/sine-range-behaviour)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Precipitation Implementations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (extend LinearPrecipitationRange
-        PrecipitationRange
-        precipitation/linear-range-behaviour)
-
-(extend LinearPrecipitationRange
-        ScaledRange
-        precipitation/scaled-range-behaviour)
+  PrecipitationRange precipitation/precipitation-range-behaviour
+  ScaledRange precipitation/linear-range-behaviour)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   General Constructor   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

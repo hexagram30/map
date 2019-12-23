@@ -4,7 +4,6 @@
     [hxgm30.map.io :as map-io]
     [hxgm30.map.scales.core :as scales]
     [hxgm30.map.scales.elevation :as elev-scale]
-    [hxgm30.map.scales.temperature :as temp-scale]
     [taoensso.timbre :as log])
   (:import
     (java.awt.image BufferedImage)))
@@ -50,13 +49,13 @@
   pixel with the adjusted temperature data to the adjusted image."
   [temp-im elev-im adj-im [x y]]
   (let [temp-pixel (map-io/rgb temp-im x y)
-        temp (temp-scale/coord->temperature ts temp-im x y)
+        temp (scales/coord->temperature ts temp-im x y)
         elev (elev-scale/coord->elevation elev-im x y)]
     (try
       (if (< elev temperature-zone-height)
         (map-io/set-rgb adj-im x y temp-pixel)
         (let [adj-temp (alt-adjust-average-temp temp elev)
-              new-temp-pixel (temp-scale/temperature->pixel ts adj-temp)]
+              new-temp-pixel (scales/temperature->pixel ts adj-temp)]
           (map-io/set-rgb adj-im x y new-temp-pixel)))
       (catch Exception ex
         (log/debugf
