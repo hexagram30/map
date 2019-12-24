@@ -102,35 +102,9 @@
   ;;     ns for reporting ... maybe hxgm30.map.biome.reports
   ;; Show frequencies of precipitations
   (def im (biome-precip/read-precipitation-tiny))
-  (def f (frequencies (sort (map-io/all-pixels im))))
-  (def tot (reduce + (vals f)))
-  (def sorted (sort (map (fn [[c fq]]
-                        (let [color-map (util/rgb-pixel->color-map c)
-                              percent (Math/round (* 100 (float (/ fq tot))))
-                              precip (precip-scale/precipitation-amount biome/ps color-map)]
-                          [fq
-                           (format "%,d mm/yr" precip)
-                           fq
-                           (format "%d%%" percent)
-                           (util/color-map->ansi color-map)
-                           (util/clj-hex->html (util/rgb-pixel->hex c))
-                           ]))
-                      f)))
-  (reverse (map rest sorted))
-  ;; ordered by precipitation
-  (def sorted
-    (sort (map (fn [[c fq]]
-                (let [color-map (util/rgb-pixel->color-map c)
-                      percent (Math/round (* 100 (float (/ fq tot))))
-                      precip (precip-scale/precipitation-amount biome/ps color-map)]
-                  [precip
-                   (format "%,d mm/yr" precip)
-                   fq
-                   (format "%d%%" percent)
-                   (util/color-map->ansi color-map)
-                   (util/clj-hex->html (util/rgb-pixel->hex c))]))
-              f)))
-  (reverse (map rest sorted))
+  (def stats (reporter/get-precip-stats im))
+  (reporter/print-precips stats) ; default is to order by highest counts
+  (reporter/print-precips stats {:sort-by :precip-int})
   ;; Show frequencies of temperatures
   ;; XXX there's a bug here somewhere: the hottest color is converted to a
   ;;     temp of 0 K ... need to write some unit tests for
