@@ -70,11 +70,10 @@
   (add-temp-data (get-stats im)))
 
 (defn print-temps
-  ([im]
-   (print-temps im {:sort-by :count}))
-  ([im opts]
-   (let [stats (get-temp-stats im)
-         fqs (reverse (sort-by (:sort-by opts) (:freqs stats)))
+  ([stats]
+   (print-temps stats {:sort-by :count}))
+  ([stats opts]
+   (let [fqs (reverse (sort-by (:sort-by opts) (:freqs stats)))
          format-str "%7s%8s%8s%8s   %-12s"]
      (println (format format-str "Color" "Hex" "Count" "Percent" " Temperature"))
      (println (format format-str "-------" "-------" "-------" "-------" "------------"))

@@ -136,8 +136,9 @@
   ;;     temp of 0 K ... need to write some unit tests for
   ;;     temp-scale/temperature-amount
   (def im (biome-temp/read-temperature-tiny))
-  (reporter/print-temps im) ; default is to order by highest counts
-  (reporter/print-temps im {:sort-by :kelvin})
+  (def stats (reporter/get-temp-stats im))
+  (reporter/print-temps stats) ; default is to order by highest counts
+  (reporter/print-temps stats {:sort-by :kelvin})
   ;; XXX let's get a report of all the biomes, too ...
   ;;     can the code in biome.core/set-biome-pixel! be generealized for both
   ;;     image and non-image use?
