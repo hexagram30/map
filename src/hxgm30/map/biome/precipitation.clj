@@ -14,6 +14,10 @@
   []
   (map-io/read-png precipitation-file))
 
+(defn read-precipitation-tiny
+  []
+  (map-io/read-png precipitation-tiny-file))
+
 (defn mils->mm
   [mils]
   (* mils mm-in-mils))

@@ -12,6 +12,7 @@
     [hxgm30.map.bands :as bands]
     [hxgm30.map.biome.core :as biome]
     [hxgm30.map.biome.precipitation :as biome-precip]
+    [hxgm30.map.biome.reporter :as reporter]
     [hxgm30.map.biome.temperature :as biome-temp]
     [hxgm30.map.components.config :as config]
     [hxgm30.map.components.core]
@@ -100,42 +101,43 @@
   ;; XXX I think maybe these functions should be moved into a new
   ;;     ns for reporting ... maybe hxgm30.map.biome.reports
   ;; Show frequencies of precipitations
-  (def im (biome-precip/read-precipitation))
+  (def im (biome-precip/read-precipitation-tiny))
   (def f (frequencies (sort (map-io/all-pixels im))))
-  (reverse (sort (map (fn [[c fq]]
-                        (let [color-map (util/rgb-pixel->color-map c)]
-                          [fq
-                           (util/color-map->ansi color-map)
-                           (util/clj-hex->html (util/rgb-pixel->hex c))
-                           (precip-scale/precipitation-amount biome/ps color-map)]))
-                      f)))
-  ;; Show frequencies of temperatures
-  ;; XXX there's a bug here somewhere: the hottest color is converted to a
-  ;;     temp of 0 K ... need to write some unit tests for
-  ;;     temp-scale/temperature-amount
-  (def im (biome-temp/read-temperature))
-  (def f (frequencies (sort (map-io/all-pixels im))))
-  ;; ordered by most frequent
-  (reverse (sort (map (fn [[c fq]]
+  (def tot (reduce + (vals f)))
+  (def sorted (sort (map (fn [[c fq]]
                         (let [color-map (util/rgb-pixel->color-map c)
-                              k (temp-scale/temperature-amount biome/ts color-map)]
+                              percent (Math/round (* 100 (float (/ fq tot))))
+                              precip (precip-scale/precipitation-amount biome/ps color-map)]
                           [fq
-                           (util/color-map->ansi color-map)
-                           (util/clj-hex->html (util/rgb-pixel->hex c))
-                           k
-                           (int (util/to-fahrenheit k))]))
-                      f)))
-  ;; ordered by temperature
-  (reverse (sort (map (fn [[c fq]]
-                        (let [color-map (util/rgb-pixel->color-map c)
-                              k (temp-scale/temperature-amount biome/ts color-map)]
-                          [k
-                           (int (util/to-fahrenheit k))
+                           (format "%,d mm/yr" precip)
                            fq
+                           (format "%d%%" percent)
                            (util/color-map->ansi color-map)
                            (util/clj-hex->html (util/rgb-pixel->hex c))
                            ]))
                       f)))
+  (reverse (map rest sorted))
+  ;; ordered by precipitation
+  (def sorted
+    (sort (map (fn [[c fq]]
+                (let [color-map (util/rgb-pixel->color-map c)
+                      percent (Math/round (* 100 (float (/ fq tot))))
+                      precip (precip-scale/precipitation-amount biome/ps color-map)]
+                  [precip
+                   (format "%,d mm/yr" precip)
+                   fq
+                   (format "%d%%" percent)
+                   (util/color-map->ansi color-map)
+                   (util/clj-hex->html (util/rgb-pixel->hex c))]))
+              f)))
+  (reverse (map rest sorted))
+  ;; Show frequencies of temperatures
+  ;; XXX there's a bug here somewhere: the hottest color is converted to a
+  ;;     temp of 0 K ... need to write some unit tests for
+  ;;     temp-scale/temperature-amount
+  (def im (biome-temp/read-temperature-tiny))
+  (reporter/print-temps im) ; default is to order by highest counts
+  (reporter/print-temps im {:sort-by :kelvin})
   ;; XXX let's get a report of all the biomes, too ...
   ;;     can the code in biome.core/set-biome-pixel! be generealized for both
   ;;     image and non-image use?

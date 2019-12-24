@@ -26,6 +26,10 @@
   []
   (map-io/read-png temperature-file))
 
+(defn read-temperature-tiny
+  []
+  (map-io/read-png temperature-tiny-file))
+
 ;;(defn read-adjusted-temperature
 ;;  []
 ;;  (map-io/read-png elev-temp-file))
