@@ -46,7 +46,7 @@
 (defn reverse-lookup
   [this]
   (->> (scales-util/lookup-grouping
-        (:colors) (:ranges this) {:rev? true})
+        (:colors this) (:ranges this) {:rev? true})
        (map (comp vec reverse))
        (into {})))
 
@@ -86,6 +86,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; XXX let's change this to operate on :ranges instead ... for each element of
+;;     ranges, take the mean between start and end; we'll probably need to include
+;;     an option for tick-count instead of step
+
+;;(map #(+ (first %) (/ (- (second %) (first %)) 2)) (:ranges this))
 
 (defn print-colors
   [this print-fn step]

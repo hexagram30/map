@@ -53,6 +53,7 @@
         [lein-shell "0.5.0"]
         [venantius/ultra "0.6.0"]]
       :source-paths ["dev-resources/src"]
+          :resource-paths ["assets/images"]
       :repl-options {
         :init-ns hxgm30.map.repl
         :prompt ~get-prompt

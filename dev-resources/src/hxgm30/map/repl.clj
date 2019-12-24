@@ -11,6 +11,7 @@
     [com.stuartsierra.component :as component]
     [hxgm30.map.bands :as bands]
     [hxgm30.map.biome.core :as biome]
+    [hxgm30.map.biome.precipitation :as biome-precip]
     [hxgm30.map.biome.temperature :as biome-temp]
     [hxgm30.map.components.config :as config]
     [hxgm30.map.components.core]
@@ -21,6 +22,7 @@
     [hxgm30.map.scales.elevation :as elev-scale]
     [hxgm30.map.scales.precipitation :as precip-scale]
     [hxgm30.map.scales.temperature :as temp-scale]
+    [hxgm30.map.scales.util :as scale-util]
     [hxgm30.map.tile :as tile]
     [hxgm30.map.util :as util]
     [hxgm30.map.voronoi :as voronoi]
@@ -93,12 +95,48 @@
   (scales/print-colors biome-temp/tr)
   (def ts (scales/new-scale :temperature :sine))
   (scales/get-ticks ts)
-  (def ps (scales/new-scale :precipitation :linear))
+  (def ps (scales/new-scale :precipitation :exponential 2))
   (scales/get-ticks ps)
-  )
-
-(comment
-  (def filename "ilunao/bump-black-sea-crop-small")
-  (def i (map-io/read-planet filename))
-  (def d (map-io/data i))
+  ;; XXX I think maybe these functions should be moved into a new
+  ;;     ns for reporting ... maybe hxgm30.map.biome.reports
+  ;; Show frequencies of precipitations
+  (def im (biome-precip/read-precipitation))
+  (def f (frequencies (sort (map-io/all-pixels im))))
+  (reverse (sort (map (fn [[c fq]]
+                        (let [color-map (util/rgb-pixel->color-map c)]
+                          [fq
+                           (util/color-map->ansi color-map)
+                           (util/clj-hex->html (util/rgb-pixel->hex c))
+                           (precip-scale/precipitation-amount biome/ps color-map)]))
+                      f)))
+  ;; Show frequencies of temperatures
+  ;; XXX there's a bug here somewhere: the hottest color is converted to a
+  ;;     temp of 0 K ... need to write some unit tests for
+  ;;     temp-scale/temperature-amount
+  (def im (biome-temp/read-temperature))
+  (def f (frequencies (sort (map-io/all-pixels im))))
+  ;; ordered by most frequent
+  (reverse (sort (map (fn [[c fq]]
+                        (let [color-map (util/rgb-pixel->color-map c)
+                              k (temp-scale/temperature-amount biome/ts color-map)]
+                          [fq
+                           (util/color-map->ansi color-map)
+                           (util/clj-hex->html (util/rgb-pixel->hex c))
+                           k
+                           (int (util/to-fahrenheit k))]))
+                      f)))
+  ;; ordered by temperature
+  (reverse (sort (map (fn [[c fq]]
+                        (let [color-map (util/rgb-pixel->color-map c)
+                              k (temp-scale/temperature-amount biome/ts color-map)]
+                          [k
+                           (int (util/to-fahrenheit k))
+                           fq
+                           (util/color-map->ansi color-map)
+                           (util/clj-hex->html (util/rgb-pixel->hex c))
+                           ]))
+                      f)))
+  ;; XXX let's get a report of all the biomes, too ...
+  ;;     can the code in biome.core/set-biome-pixel! be generealized for both
+  ;;     image and non-image use?
   )
