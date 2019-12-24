@@ -144,10 +144,33 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; XXX Create a reporter for biome data as well as generated biome images:
-;;     * Generalize the logic in biome.core/set-biome-pixel! to work with both
-;;       images and data structures, splitting it out into a supporting function
-;;     * Refactor biome.core/set-biome-pixel! to use this new function
-;;     * Might need to refactor biome.core/create-image, too
 ;;     * Generate stats for processed biome data:
 ;;       * Get counts of temp/precip combinations
 ;;       * Create printer function, output should include biome name/description
+
+(defn get-biome-frequency-data
+  "Read a pixel from a temperature image, get its RGB values, and lookup the
+  temperature for that pixel. Do the same for precipitation. Convert each color
+  to its respective temperature and precipitation value. Use these to perform a
+  biome lookup, extract the color for that biome, and then add the pixel with
+  the new biome data to the biome image."
+  [total [biome-datum fq]]
+  (assoc biome-datum
+         :percent (format-percent (get-percent fq total))))
+
+(defn get-biome-stats
+  "This function reads pixel data for temperature and precipitation from two
+  files, then creates a new file with colors derived from these and the biomes
+  lookup data."
+  [temp-im precip-im]
+  (let [x-max (map-io/width temp-im)
+        y-max (map-io/height temp-im)
+        biomes (mapcat #(map
+                      (fn [y] (biome/get-data temp-im precip-im [% y]))
+                      (range y-max))
+                    (range x-max))
+        biome-freqs (frequencies (sort-by :ansi biomes))
+        total (reduce + (vals biome-freqs))
+        fdata (map (partial get-biome-frequency-data total) biome-freqs)]
+    {:freqs fdata
+     :total total}))
