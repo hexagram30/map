@@ -93,7 +93,8 @@
   (biome/print-colors-matrix)
   (biome/print-legend)
   (biome/create-image)
-  (scales/print-colors biome-temp/tr)
+  (scales/print-colors biome-temp/ts)
+  (scales/print-colors biome-temp/ps)
   (def ts (scales/new-scale :temperature :sine))
   (scales/get-ticks ts)
   (def ps (scales/new-scale :precipitation :exponential 2))
@@ -104,9 +105,6 @@
   (reporter/print-precips stats) ; default is to order by highest counts
   (reporter/print-precips stats {:sort-by :precip-int})
   ;; Show frequencies of temperatures
-  ;; XXX there's a bug here somewhere: the hottest color is converted to a
-  ;;     temp of 0 K ... need to write some unit tests for
-  ;;     temp-scale/temperature-amount
   (def im (biome-temp/read-temperature-tiny))
   (def stats (reporter/get-temp-stats im))
   (reporter/print-temps stats) ; default is to order by highest counts
