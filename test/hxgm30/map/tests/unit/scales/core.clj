@@ -25,7 +25,10 @@
     (is (extends? scales/TemperatureRange LinearTemperatureRange))
     ;; Check some methods
     (is (= 222 (:normalized-min ts)))
-    (is (= 222 (scales/get-normalized-min ts))))
+    (is (= 222 (scales/get-normalized-min ts)))
+    ;; Check for the high-temp bug
+    (let [color-map {:blue 2 :green 6 :red 83}]
+      (is (= 304 (scales/temperature-amount ts color-map)))))
   (let [ts (scales/new-scale :temperature :sine)]
     (is (record? ts))
     (is (= SineTemperatureRange (type ts) ))

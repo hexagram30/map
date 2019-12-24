@@ -11,7 +11,7 @@
 (defn linear-ticks-per-range
   [this]
   (float (/ (- (:max this) (:min this))
-            (dec (:color-count this)))))
+            (:color-count this))))
 
 (defn linear-ranges
   [this]
