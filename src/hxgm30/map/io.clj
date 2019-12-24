@@ -138,8 +138,9 @@
   (tile-width [this])
   (unique-hex-colors [this])
   (unique-rgb-colors [this])
-  (unique-hex-row-colors [this])
-  (unique-rgb-row-colors [this])
+  (unique-hex-row-colors [this] [this row-index])
+  (unique-rgb-row-colors [this] [this row-index])
+  (unique-color-map-row-colors [this] [this row-index])
   (x-tiles-count [this]
     "Returns the number of tiles in the x direction.")
   (y-tiles-count [this]
@@ -214,6 +215,14 @@
         (mapv util/rgb-pixel->hex)
         (into (ordered-set)))))
 
+(defn -unique-color-map-row-colors
+  ([this]
+   (-unique-color-map-row-colors this (int (/ (height this) 2))))
+  ([this row]
+   (->> (-unique-rgb-row-colors this row)
+        (mapv util/rgb-pixel->color-map)
+        (into (ordered-set)))))
+
 (def bmp-behaviour
   {:all-pixels -get-all-pixels
    :band -band
@@ -236,6 +245,7 @@
    :unique-rgb-colors -unique-rgb-colors
    :unique-rgb-row-colors -unique-rgb-row-colors
    :unique-hex-row-colors -unique-hex-row-colors
+   :unique-color-map-row-colors -unique-color-map-row-colors
    :x-tiles-count #(.getNumXTiles %)
    :y-tiles-count #(.getNumYTiles %)})
 

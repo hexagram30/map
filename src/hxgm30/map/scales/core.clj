@@ -3,7 +3,9 @@
    [hxgm30.map.scales.precipitation :as precipitation]
    [hxgm30.map.scales.temperature :as temperature])
   (:import
-   (hxgm30.map.scales.precipitation LinearPrecipitationRange)
+   (hxgm30.map.scales.precipitation ExponentialPrecipitationRange
+                                    LinearPrecipitationRange
+                                    ReverseExponentialPrecipitationRange)
    (hxgm30.map.scales.temperature LinearTemperatureRange
                                   SineTemperatureRange)))
 
@@ -41,7 +43,7 @@
 (defprotocol PrecipitationRange
   (precipitation-amount [this color-map])
   (coord->precipitation [this im x y])
-  (precipitation->pixel [this milyr]))
+  (precipitation->pixel [this rate]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Temperature Implementations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -63,13 +65,21 @@
   PrecipitationRange precipitation/precipitation-range-behaviour
   ScaledRange precipitation/linear-range-behaviour)
 
+(extend ExponentialPrecipitationRange
+  PrecipitationRange precipitation/precipitation-range-behaviour
+  ScaledRange precipitation/exponential-range-behaviour)
+
+(extend ReverseExponentialPrecipitationRange
+        PrecipitationRange precipitation/precipitation-range-behaviour
+        ScaledRange precipitation/rev-exp-range-behaviour)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   General Constructor   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn new-scale
-  [type sub-type]
+  [type sub-type & rest]
   (case type
         :temperature (temperature/new-range sub-type)
-        :precipitation (precipitation/new-range sub-type)
+        :precipitation (precipitation/new-range sub-type rest)
         :unsupported-scale-type))

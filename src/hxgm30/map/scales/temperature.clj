@@ -19,7 +19,7 @@
 ;;(def temperature-max 316) ; in degrees C/K
 (def temperature-max 306) ; in degrees C/K
 (def temperature-file "ilunao/temperature-scale-hex3")
-(def default-color-step-size 43000)
+(def default-color-step-size 2)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Shared Temperature Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

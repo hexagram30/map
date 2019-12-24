@@ -82,8 +82,7 @@
   the new biome data to the biome image."
   [temp-im precip-im biome-im [x y]]
   (let [temp (scales/coord->temperature ts temp-im x y)
-        precip-mils (scales/coord->precipitation ps precip-im x y)
-        precip (precipitation/mils->mm precip-mils)
+        precip (scales/coord->precipitation ps precip-im x y)
         biome (nearest precip temp)
         biome-pixel (util/hex->rgb-pixel (:color biome))]
     (log/debugf
