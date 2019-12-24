@@ -69,6 +69,14 @@
   [im]
   (add-temp-data (get-stats im)))
 
+;; XXX let's create a generalized function for these two, defining the following:
+;;     * precip/temp formatters
+;;     * precip/temp headers
+;;     * precip/temp dividers
+;;
+;;     These defs will then be passed to the general function, along with the key
+;;     to use for the type of report (e.g., :precip-str or :temp)
+
 (defn print-precips
   ([stats]
    (print-precips stats {:sort-by :count}))
