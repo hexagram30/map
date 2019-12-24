@@ -100,14 +100,18 @@
   (def ps (scales/new-scale :precipitation :exponential 2))
   (scales/get-ticks ps)
   ;; Show frequencies of precipitations
-  (def im (biome-precip/read-precipitation-tiny))
-  (def stats (reporter/get-precip-stats im))
+  (def precip-im (biome-precip/read-precipitation-tiny))
+  (def stats (reporter/get-precip-stats precip-im))
   (reporter/print-precips stats) ; default is to order by highest counts
   (reporter/print-precips stats {:sort-by :precip-int})
   ;; Show frequencies of temperatures
-  (def im (biome-temp/read-temperature-tiny))
-  (def stats (reporter/get-temp-stats im))
+  (def temp-im (biome-temp/read-temperature-tiny))
+  (def stats (reporter/get-temp-stats temp-im))
   (reporter/print-temps stats) ; default is to order by highest counts
   (reporter/print-temps stats {:sort-by :kelvin})
-  ;; XXX biome reporter example ...
+  ;; Show frequencies of biomes
+  (def temp-im (biome-temp/read-temperature-tiny))
+  (def precip-im (biome-precip/read-precipitation-tiny))
+  (def stats (reporter/get-biome-stats temp-im precip-im))
+  (reporter/print-biomes stats)
   )

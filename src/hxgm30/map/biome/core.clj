@@ -74,6 +74,22 @@
        BufferedImage/TYPE_BYTE_INDEXED
        (.getColorModel im)))
 
+(defn get-data
+  [temp-im precip-im [x y]]
+  (let [temp (scales/coord->temperature ts temp-im x y)
+        precip (scales/coord->precipitation ps precip-im x y)
+        biome (nearest precip temp)
+        rgb (util/hex->rgb-pixel (:color biome))
+        color-map (util/rgb-pixel->color-map rgb)]
+    (assoc biome
+      :rgb rgb
+      :color-map color-map
+      :ansi (util/color-map->ansi color-map)
+      :temp temp
+      :precip precip
+      :nearest-temp (nearest-temp temp)
+      :nearest-precip (nearest-precip precip))))
+
 (defn set-biome-pixel!
   "Read a pixel from a temperature image, get its RGB values, and lookup the
   temperature for that pixel. Do the same for precipitation. Convert each color
@@ -81,16 +97,17 @@
   biome lookup, extract the color for that biome, and then add the pixel with
   the new biome data to the biome image."
   [temp-im precip-im biome-im [x y]]
-  (let [temp (scales/coord->temperature ts temp-im x y)
-        precip (scales/coord->precipitation ps precip-im x y)
-        biome (nearest precip temp)
-        biome-pixel (util/hex->rgb-pixel (:color biome))]
+  (let [biome-data (get-data temp-im precip-im [x y])]
     (log/debugf
-      "Got precip, temp, and biome: [%s %s] -> [%s %s] = %s %s" precip temp
-      (nearest-precip precip) (nearest-temp temp)
-      (util/hex->ansi (:color biome)) (:name biome))
+      "Got precip, temp, and biome: [%s %s] -> [%s %s] = %s %s"
+      (:precip biome-data)
+      (:temp biome-data)
+      (:nearest-precip biome-data)
+      (:nearest-temp biome-data)
+      (:ansi biome-data)
+      (:name biome-data))
     (try
-      (map-io/set-rgb biome-im x y biome-pixel)
+      (map-io/set-rgb biome-im x y (:rgb biome-data))
       (catch Exception ex
         (log/error ex)
         (log/errorf
@@ -98,9 +115,9 @@
                "precip, temp, or biome ([%s, %s] = %s)")
           x
           y
-          precip
-          temp
-          (:color biome))))))
+          (:precip biome-data)
+          (:temp biome-data)
+          (:color biome-data))))))
 
 (defn create-image
   "This function reads pixel data for temperature and precipitation from two
