@@ -98,8 +98,6 @@
   (scales/get-ticks ts)
   (def ps (scales/new-scale :precipitation :exponential 2))
   (scales/get-ticks ps)
-  ;; XXX I think maybe these functions should be moved into a new
-  ;;     ns for reporting ... maybe hxgm30.map.biome.reports
   ;; Show frequencies of precipitations
   (def im (biome-precip/read-precipitation-tiny))
   (def stats (reporter/get-precip-stats im))
@@ -113,7 +111,5 @@
   (def stats (reporter/get-temp-stats im))
   (reporter/print-temps stats) ; default is to order by highest counts
   (reporter/print-temps stats {:sort-by :kelvin})
-  ;; XXX let's get a report of all the biomes, too ...
-  ;;     can the code in biome.core/set-biome-pixel! be generealized for both
-  ;;     image and non-image use?
+  ;; XXX biome reporter example ...
   )

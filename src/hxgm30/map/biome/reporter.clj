@@ -114,3 +114,12 @@
                          (:temp fq)))))
      (println (format "\nTotal counts: %d" (:total stats))))
    :ok))
+
+;; XXX Create a reporter for biome data as well as generated biome images:
+;;     * Generalize the logic in biome.core/set-biome-pixel! to work with both
+;;       images and data structures, splitting it out into a supporting function
+;;     * Refactor biome.core/set-biome-pixel! to use this new function
+;;     * Might need to refactor biome.core/create-image, too
+;;     * Generate stats for processed biome data:
+;;       * Get counts of temp/precip combinations
+;;       * Create printer function, output should include biome name/description
