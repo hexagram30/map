@@ -34,8 +34,8 @@
 (defn add-precip-datum
   [data]
   (let [precip (scales/precipitation-amount biome/ps (:color-map data))]
-    (assoc data :precip-raw precip
-                :precip (format-precip precip))))
+    (assoc data :precip-int precip
+                :precip-str (format-precip precip))))
 
 (defn add-precip-data
   [stats]
@@ -68,6 +68,25 @@
 (defn get-temp-stats
   [im]
   (add-temp-data (get-stats im)))
+
+(defn print-precips
+  ([stats]
+   (print-precips stats {:sort-by :count}))
+  ([stats opts]
+   (let [fqs (reverse (sort-by (:sort-by opts) (:freqs stats)))
+         format-str "%7s%8s%8s%8s %13s"]
+     (println (format format-str "Color" "Hex" "Count" "Percent" "Precipitation"))
+     (println (format format-str "-------" "-------" "-------" "-------" "-------------"))
+     (doall
+      (for [fq fqs]
+        (println (format format-str
+                         (:ansi fq)
+                         (:hex fq)
+                         (:count fq)
+                         (:percent fq)
+                         (:precip-str fq)))))
+     (println (format "\nTotal counts: %d" (:total stats))))
+   :ok))
 
 (defn print-temps
   ([stats]
