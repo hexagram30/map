@@ -35,6 +35,12 @@
 
 (def biomes (map-io/read-edn "ilunao/biomes"))
 (def biomes-indexed (map-indexed vector biomes))
+(def index-lookup-by-name (->> biomes-indexed
+                               (map #(vector (:name (second %)) (first %)))
+                               (into {})))
+(def index-lookup-by-color (->> biomes-indexed
+                                (map #(vector (:color (second %)) (first %)))
+                                (into {})))
 (def biomes-matrix [
   [ 0  0  0  0  0  0  0  0  0]
   [ 1  2  3  4  4  4  4  4  4]
@@ -82,10 +88,11 @@
         rgb (util/hex->rgb-pixel (:color biome))
         color-map (util/rgb-pixel->color-map rgb)]
     (assoc biome
+      :biome-index (get index-lookup-by-color (:color biome))
       :rgb rgb
       :color-map color-map
       :ansi (util/color-map->ansi color-map)
-      :temp temp
+      :kelvin temp
       :precip precip
       :nearest-temp (nearest-temp temp)
       :nearest-precip (nearest-precip precip))))
@@ -101,7 +108,7 @@
     (log/debugf
       "Got precip, temp, and biome: [%s %s] -> [%s %s] = %s %s"
       (:precip biome-data)
-      (:temp biome-data)
+      (:kelvin biome-data)
       (:nearest-precip biome-data)
       (:nearest-temp biome-data)
       (:ansi biome-data)
@@ -116,7 +123,7 @@
           x
           y
           (:precip biome-data)
-          (:temp biome-data)
+          (:kelvin biome-data)
           (:color biome-data))))))
 
 (defn create-image
