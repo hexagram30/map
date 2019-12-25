@@ -198,10 +198,10 @@
   (case (keyword cmd)
     :regen (case (keyword subcmd)
              :image (do
-                      (log/info "Regenerating tiny biome image ...")
+                      (log/info "Regenerating biome image ...")
                       (create-image))
              :tiny-image (do
-                           (log/info "Regenerating biome image ...")
+                           (log/info "Regenerating tiny biome image ...")
                            (create-tiny-image))
              (log/errorf "Undefined subcommand '%s'" subcmd))
     (log/errorf "Undefined command '%s'" subcmd)))

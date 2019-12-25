@@ -125,19 +125,32 @@
    normalized-max
    normalized-min
    normalized-range
+   power
    range
    ranges])
 
+;; For the exponential ranges, we need to calculate the x that gives y = 16,000
+;; (or whatever the max precip is). That's the max x, and we need to split that
+;; up into a number of divisions that equal the color count.
+(defn mex-exponential-input
+  [this]
+  (Math/pow (:max this) (/ 1 (:power this))))
+
 (defn exponential-ticks-per-range
   [this]
-  (float (/ (:normalized-range this)
+  (float (/ (mex-exponential-input this)
             (:color-count this))))
+
+(defn exponential-inputs
+  [this]
+  (let [color-count (:color-count this)]
+    (map #(* % (exponential-ticks-per-range this))
+         (range (inc color-count)))))
 
 (defn exponential-ticks
   [this]
-  (map (fn [x] (Math/pow (* x (exponential-ticks-per-range this))
-                         (:power this)))
-       (range (inc (:color-count this)))))
+  (map #(Math/pow % (:power this))
+       (exponential-inputs this)))
 
 (defn exponential-ranges
   [this]
