@@ -101,17 +101,24 @@
   (scales/get-ticks ps)
   ;; Show frequencies of precipitations
   (def precip-im (biome-precip/read-precipitation-tiny))
-  (def stats (reporter/get-precip-stats precip-im))
-  (reporter/print-precips stats) ; default is to order by highest counts
-  (reporter/print-precips stats {:sort-by :precip-int})
+  (def precip-stats (reporter/get-precip-stats precip-im))
+  (reporter/print-precips precip-stats) ; default is to order by highest counts
+  (reporter/print-precips precip-stats {:sort-by :precip-int})
   ;; Show frequencies of temperatures
   (def temp-im (biome-temp/read-temperature-tiny))
-  (def stats (reporter/get-temp-stats temp-im))
-  (reporter/print-temps stats) ; default is to order by highest counts
-  (reporter/print-temps stats {:sort-by :kelvin})
+  (def temp-stats (reporter/get-temp-stats temp-im))
+  (reporter/print-temps temp-stats) ; default is to order by highest counts
+  (reporter/print-temps temp-stats {:sort-by :kelvin})
   ;; Show frequencies of biomes
   (def temp-im (biome-temp/read-temperature-tiny))
   (def precip-im (biome-precip/read-precipitation-tiny))
-  (def stats (reporter/get-biome-stats temp-im precip-im))
-  (reporter/print-biomes stats)
+  (def biome-stats (reporter/get-biome-stats temp-im precip-im))
+  (spit "/tmp/biomes.edn" biome-stats)
+  (reporter/print-biomes biome-stats)
+
+  (def biome-stats (read-string (slurp "/tmp/biomes.edn")))
+  (reporter/print-biomes biome-stats)
+  (reporter/print-biomes biome-stats {:sort-by :kelvin})
+  (reporter/print-biomes biome-stats {:sort-by :biome-index})
+  (reporter/print-biomes biome-stats {:sort-by :biome-index :ascending true})
   )

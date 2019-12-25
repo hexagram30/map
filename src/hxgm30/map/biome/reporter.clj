@@ -35,12 +35,18 @@
     {:freqs fdata
      :total total}))
 
+(defn sorted-freqs
+  [freqs opts]
+  (if (:ascending opts)
+    (sort-by (:sort-by opts) freqs)
+    (reverse (sort-by (:sort-by opts) freqs))))
+
 (defn print-data
   ([stats header divider formatter]
    (print-data stats header divider formatter {:sort-by :count}))
   ([stats header divider formatter opts]
-   (let [fqs (reverse (sort-by (:sort-by opts) (:freqs stats)))
-         ]
+   (println)
+   (let [fqs (sorted-freqs (:freqs stats) opts)]
      (println header)
      (println divider)
      (doall
@@ -74,10 +80,10 @@
   (format "%,d mm/yr" p))
 
 (defn add-precip-datum
-  [data]
-  (let [precip (scales/precipitation-amount biome/ps (:color-map data))]
-    (assoc data :precip-int precip
-                :precip-str (format-precip precip))))
+  [datum]
+  (let [precip (scales/precipitation-amount biome/ps (:color-map datum))]
+    (assoc datum :precip-int precip
+                 :precip-str (format-precip precip))))
 
 (defn add-precip-data
   [stats]
@@ -97,7 +103,7 @@
 ;;;   Temperature Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def temp-format-str "%7s%8s%8s%8s   %-12s")
+(def temp-format-str"%7s%8s%8s%8s   %-12s")
 (def temp-header (format temp-format-str
                          "Color" "Hex" "Count" "Percent" " Temperature"))
 (def temp-divider (format temp-format-str
@@ -111,19 +117,21 @@
           (:hex fq)
           (:count fq)
           (:percent fq)
-          (:temp fq)))
+          (:temp fq)
+          (:precip-str fq)
+          (:name fq)))
 
 (defn format-temp
   [k f]
   (format "%d K (%d F)" k f))
 
 (defn add-temp-datum
-  [data]
-  (let [k (scales/temperature-amount biome/ts (:color-map data))
+  [datum]
+  (let [k (scales/temperature-amount biome/ts (:color-map datum))
         f (int (util/to-fahrenheit k))]
-    (assoc data :kelvin k
-                :fahrenheit f
-                :temp (format-temp k f))))
+    (assoc datum :kelvin k
+                 :fahrenheit f
+                 :temp (format-temp k f))))
 
 (defn add-temp-data
   [stats]
@@ -143,10 +151,14 @@
 ;;;   Biome Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; XXX Create a reporter for biome data as well as generated biome images:
-;;     * Generate stats for processed biome data:
-;;       * Get counts of temp/precip combinations
-;;       * Create printer function, output should include biome name/description
+(def biome-format-str "%7s%8s%8s%8s   %-14s %14s %12s   %-40s")
+(def biome-header (format biome-format-str
+                          "Color" "Hex" "Count" "Percent" " Temperature"
+                          " Precipitation" " Biome Index" " Biome Name"))
+(def biome-divider (format biome-format-str
+                           "-------" "-------" "-------" "-------"
+                           "------------" "--------------" " -----------"
+                           "------------"))
 
 (defn get-biome-frequency-data
   "Read a pixel from a temperature image, get its RGB values, and lookup the
@@ -155,8 +167,14 @@
   biome lookup, extract the color for that biome, and then add the pixel with
   the new biome data to the biome image."
   [total [biome-datum fq]]
-  (assoc biome-datum
-         :percent (format-percent (get-percent fq total))))
+  (let [k (:kelvin biome-datum)
+        f (int (util/to-fahrenheit k))]
+    (assoc biome-datum
+           :count fq
+           :percent (format-percent (get-percent fq total))
+           :fahrenheit f
+           :temp (format-temp k f)
+           :precip-str (format-precip (:precip biome-datum)))))
 
 (defn get-biome-stats
   "This function reads pixel data for temperature and precipitation from two
@@ -174,3 +192,21 @@
         fdata (map (partial get-biome-frequency-data total) biome-freqs)]
     {:freqs fdata
      :total total}))
+
+(defn biome-freq-formatter
+  [fq]
+  (format biome-format-str
+          (:ansi fq)
+          (:color fq)
+          (:count fq)
+          (:percent fq)
+          (:temp fq)
+          (:precip-str fq)
+          (:biome-index fq)
+          (:name fq)))
+
+(defn print-biomes
+  ([stats]
+   (print-biomes stats {:sort-by :count}))
+  ([stats opts]
+   (print-data stats biome-header biome-divider biome-freq-formatter opts)))
