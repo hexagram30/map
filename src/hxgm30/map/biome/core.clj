@@ -1,8 +1,11 @@
 (ns hxgm30.map.biome.core
   (:require
     [clojure.data.avl :as avl]
+    [clojusc.system-manager.core :as system]
+    [clojusc.twig :as logger]
     [hxgm30.map.biome.precipitation :as precipitation]
     [hxgm30.map.biome.temperature :as temperature]
+    [hxgm30.map.components.core]
     [hxgm30.map.io :as map-io]
     [hxgm30.map.scales.core :as scales]
     [hxgm30.map.scales.precipitation :as precip-scale]
@@ -10,7 +13,8 @@
     [hxgm30.map.util :as util]
     [taoensso.timbre :as log])
   (:import
-    (java.awt.image BufferedImage)))
+    (java.awt.image BufferedImage))
+  (:gen-class))
 
 (def biomes-colorspace-file "ilunao/biomes-colors")
 (def biomes-file "ilunao/biomes")
@@ -174,3 +178,30 @@
             (util/hex->color-map (:color zone))
             util/ansi-rectangle))
     (println " " (:name zone))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   CLI Usage   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def cli-setup-options {
+  :init 'hxgm30.map.components.core/cli
+  :throw-errors true})
+
+(defn -main
+  [& [cmd & [subcmd & args]]]
+  (logger/set-level! '[hxgm30] :error)
+  (system/setup-manager cli-setup-options)
+  (system/startup)
+  (log/debug "Command:" cmd)
+  (log/debug "Sub-command:" subcmd)
+  (log/debug "Args:" args)
+  (case (keyword cmd)
+    :regen (case (keyword subcmd)
+             :image (do
+                      (log/info "Regenerating tiny biome image ...")
+                      (create-image))
+             :tiny-image (do
+                           (log/info "Regenerating biome image ...")
+                           (create-tiny-image))
+             (log/errorf "Undefined subcommand '%s'" subcmd))
+    (log/errorf "Undefined command '%s'" subcmd)))

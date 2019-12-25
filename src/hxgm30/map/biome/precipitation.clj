@@ -7,8 +7,8 @@
 
 (def precipitation-file "ilunao/precipitation")
 (def precipitation-tiny-file "ilunao/precipitation-tiny")
-;;(def ps (scales/new-scale :precipitation :exponential 2))
-(def ps (scales/new-scale :precipitation :linear))
+(def ps (scales/new-scale :precipitation :exponential 1.2))
+;(def ps (scales/new-scale :precipitation :linear))
 
 (defn read-precipitation
   []

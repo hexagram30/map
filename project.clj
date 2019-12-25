@@ -58,6 +58,8 @@
         :init-ns hxgm30.map.repl
         :prompt ~get-prompt
         :init ~(println (get-banner))}}
+    :biome {
+      :main hxgm30.map.biome.core}
     :lint {
       :source-paths ^:replace ["src"]
       :test-paths ^:replace []
@@ -95,6 +97,7 @@
       ["kibit"]
       ; ["eastwood"]
       ]
+    "biome" ["with-profile" "+dev,+biome" "run"]
     "ltest" ["with-profile" "+test" "ltest"]
     "ltest-clean" ["do"
       ["clean"]
