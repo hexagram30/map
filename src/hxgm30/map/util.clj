@@ -58,9 +58,10 @@
   ""
   [color]
   (let [components (hex->rgb color)]
-    {:red (nth components 0)
+    (sorted-map
+     :red (nth components 0)
      :green (nth components 1)
-     :blue (nth components 2)}))
+     :blue (nth components 2))))
 
 (def ansi-square "███")
 (def ansi-rectangle "███████")
@@ -121,9 +122,10 @@
 
 (defn rgb-pixel->color-map
   [pixel]
-  {:red (bit-and (bit-shift-right pixel 16) 0x000000ff)
+  (sorted-map
+   :red (bit-and (bit-shift-right pixel 16) 0x000000ff)
    :green (bit-and (bit-shift-right pixel 8) 0x000000ff)
-   :blue (bit-and pixel 0x000000ff)})
+   :blue (bit-and pixel 0x000000ff)))
 
 (defn rgb-pixel->hex
   [pixel]
@@ -215,9 +217,10 @@
        (sort-by :hsl)
        (map (fn [c]
              (let [x (:rgba c)]
-              {:red (nth x 0)
-               :green (nth x 1)
-               :blue (nth x 2)})))
+               (sorted-map
+                :red (nth x 0)
+                :green (nth x 1)
+                :blue (nth x 2)))))
        (print-gimp-palette name))
   :ok)
 

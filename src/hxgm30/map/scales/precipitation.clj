@@ -69,18 +69,20 @@
 (defn coord->precipitation
   [this im x y]
   (log/debugf "Getting precipitation for [%s, %s] ..." x y)
-  (-> (map-io/rgb im x y)
-      ((fn [x] (log/trace "RGB pixel:" x) x))
-      util/rgb-pixel->color-map
-      ((fn [x] (log/trace "Color map:" x) x))
-      (precipitation-amount this)
-      ((fn [x] (log/trace "Precipitation:" x) x))))
+  (->> (map-io/rgb im x y)
+       ((fn [x] (log/trace "RGB pixel:" x) x))
+       util/rgb-pixel->color-map
+       ((fn [x] (log/trace "Color map:" x) x))
+       (precipitation-amount this)
+       ((fn [x] (log/trace "Precipitation:" x) x))))
 
 (defn precipitation->pixel
   [this rate]
-  (-> rate
-      (common/get-color this)
-      util/color-map->rgb-pixel))
+  (->> rate
+       ((fn [x] (log/trace "Precipitation:" x) x))
+       (common/get-color this)
+       ((fn [x] (log/trace "Color map:" x) x))
+       util/color-map->rgb-pixel))
 
 (def precipitation-range-behaviour
   {:precipitation-amount precipitation-amount
