@@ -60,6 +60,7 @@
 
 (def init-lookup
   {:basic #'initialize-bare-bones
+   :cli #'initialize-bare-bones
    :default #'initialize
    :testing #'initialize-for-tests})
 
@@ -68,3 +69,5 @@
     (init :default))
   ([mode]
     ((mode init-lookup))))
+
+(def cli #(init :cli))

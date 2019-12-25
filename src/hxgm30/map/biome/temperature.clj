@@ -21,6 +21,7 @@
 (def temperature-tiny-file "ilunao/temperature-tiny")
 (def elev-temp-file "ilunao/elevation-temperature")
 (def ts (scales/new-scale :temperature :linear))
+;(def ts (scales/new-scale :temperature :sine))
 
 (defn read-temperature
   []

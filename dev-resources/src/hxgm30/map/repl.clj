@@ -99,6 +99,7 @@
   (scales/get-ticks ts)
   (def ps (scales/new-scale :precipitation :exponential 2))
   (scales/get-ticks ps)
+  (scales/get-ranges ps)
   ;; Show frequencies of precipitations
   (def precip-im (biome-precip/read-precipitation-tiny))
   (def precip-stats (reporter/get-precip-stats precip-im))
