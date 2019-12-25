@@ -81,7 +81,7 @@
   [this kelvin]
   (log/debugf "Getting pixel for temperature %s ..." kelvin)
   (->> kelvin
-       ((fn [x] (log/trace "Temperate:" x) x))
+       ((fn [x] (log/trace "Temperature:" x) x))
        (common/get-color this)
        ((fn [x] (log/trace "Color map:" x) x))
        util/color-map->rgb-pixel))
