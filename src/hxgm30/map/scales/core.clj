@@ -6,7 +6,8 @@
    (hxgm30.map.scales.precipitation ExponentialPrecipitationRange
                                     LinearPrecipitationRange
                                     ReverseExponentialPrecipitationRange)
-   (hxgm30.map.scales.temperature LinearTemperatureRange
+   (hxgm30.map.scales.temperature CatenaryTemperatureRange
+                                  LinearTemperatureRange
                                   SineTemperatureRange)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -49,25 +50,29 @@
 ;;;   Temperature Implementations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(extend CatenaryTemperatureRange
+        TemperatureRange temperature/temperature-range-behaviour
+        ScaledRange temperature/catenary-range-behaviour)
+
 (extend LinearTemperatureRange
-  TemperatureRange temperature/temperature-range-behaviour
-  ScaledRange temperature/linear-range-behaviour)
+        TemperatureRange temperature/temperature-range-behaviour
+        ScaledRange temperature/linear-range-behaviour)
 
 (extend SineTemperatureRange
-  TemperatureRange temperature/temperature-range-behaviour
-  ScaledRange temperature/sine-range-behaviour)
+        TemperatureRange temperature/temperature-range-behaviour
+        ScaledRange temperature/sine-range-behaviour)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Precipitation Implementations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (extend LinearPrecipitationRange
-  PrecipitationRange precipitation/precipitation-range-behaviour
-  ScaledRange precipitation/linear-range-behaviour)
+        PrecipitationRange precipitation/precipitation-range-behaviour
+        ScaledRange precipitation/linear-range-behaviour)
 
 (extend ExponentialPrecipitationRange
-  PrecipitationRange precipitation/precipitation-range-behaviour
-  ScaledRange precipitation/exponential-range-behaviour)
+        PrecipitationRange precipitation/precipitation-range-behaviour
+        ScaledRange precipitation/exponential-range-behaviour)
 
 (extend ReverseExponentialPrecipitationRange
         PrecipitationRange precipitation/precipitation-range-behaviour
@@ -80,6 +85,6 @@
 (defn new-scale
   [type sub-type & rest]
   (case type
-        :temperature (temperature/new-range sub-type)
+        :temperature (temperature/new-range sub-type rest)
         :precipitation (precipitation/new-range sub-type rest)
         :unsupported-scale-type))
