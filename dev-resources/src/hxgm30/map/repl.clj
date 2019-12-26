@@ -96,6 +96,7 @@
   (scales/print-colors biome-temp/ts)
   (scales/print-colors biome-temp/ps)
   (def ts (scales/new-scale :temperature :sine))
+  (def ts (scales/new-scale :temperature :catenary 4))
   (scales/get-ticks ts)
   (def ps (scales/new-scale :precipitation :exponential 2))
   (scales/get-ticks ps)

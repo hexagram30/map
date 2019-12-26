@@ -180,67 +180,75 @@
     :print-colors print-colors))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Tangent-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Catenary Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;(defrecord TanTemperatureRange
-;;  [normalized-min normalized-max]
-;;  ScaledRange
-;;  )
-;;
-;;(defn new-tan-temp-range
-;;  []
-;;  (map->TanTemperatureRange {
-;;                             :normalized-min (* Math/PI -0.2)
-;;                             :normalized-max (* Math/PI 0.2)}))
-;;
-;;(def min-distrib (* Math/PI -0.2))
-;;(def max-distrib (* Math/PI 0.2))
-;;(def distrib-interval (- max-distrib min-distrib))
-;;(def ticks-per-range (/ distrib-interval (inc (/ temperature-count 2))))
-;;(def distrib-range (* (inc temperature-count) ticks-per-range))
-;;(def distrib-mean (/ distrib-range 2))
-;;(def xs
-;;  (rest
-;;   (map #(Math/tan (- distrib-mean (* ticks-per-range %)))
-;;        (range (inc temperature-count)))))
+(defrecord CatenaryTemperatureRange
+  [color-count
+   colors
+   curvature
+   max
+   mean
+   min
+   normalized-max
+   normalized-min
+   normalized-range
+   range
+   ranges])
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Inverse-Hyperbolic-Tangent-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn catenary-ticks-per-range
+  [this]
+  (float (/ (* 2 (:curvature this))
+            (:color-count this))))
 
-;;(defrecord AtanhTemperatureRange
-;;  [normalized-min normalized-max]
-;;  ScaledRange
-;;  )
-;;
-;;(defn new-atanh-temp-range
-;;  []
-;;  (map->AtanhTemperatureRange {
-;;                                :normalized-min -1
-;;                                :normalized-max 1}))
-;;
-;;(def min-distrib -1)
-;;(def max-distrib 1)
-;;(def distrib-interval (- max-distrib min-distrib))
-;;(def ticks-per-range (/ distrib-interval (inc (/ temperature-count 2.0))))
-;;(def distrib-range (* (inc temperature-count) ticks-per-range))
-;;(def distrib-mean (/ distrib-range 2))
-;;(def xs
-;;  (rest
-;;   (map #(FastMath/atanh (- distrib-mean (* ticks-per-range %)))
-;;        (range (inc temperature-count)))))
+(defn catenary-half-range
+  [this sign]
+  (map #(* sign % (catenary-ticks-per-range this))
+       (rest (range (inc (/ (:color-count this) 2))))))
 
+(defn catenary-inputs
+  "These are the 'x' values that generate the corresponding 'y' values of the
+  'catenary-ticks' function."
+  [this]
+  (concat (reverse (catenary-half-range this -1))
+          [0]
+          (catenary-half-range this 1)))
 
+(defn catenary-normalized-ticks
+  [this]
+  (map #(* (Math/cosh %)
+           (if (neg? %) -1 1))
+       (catenary-inputs this)))
 
-;;(defn temperature-ranges
-;;  []
-;;  (reverse
-;;   (map (fn [range]
-;;          (reverse
-;;           (map #(+ (- temperature-max temperature-mean)
-;;                    (* temperature-mean %)) range)))
-;;        (partition 2 (interleave (butlast xs) (rest xs))))))
+(defn catenary-adjusted-ticks
+  [this]
+  (map #(/ %
+           (/ (common/normalized-range this) (:range this)))
+       (catenary-normalized-ticks this)))
+
+(defn catenary-ticks
+  "This returns the 'y' values for the given scale, one for each color count."
+  [this]
+  (let [adj-ticks (catenary-adjusted-ticks this)]
+    (map #(+ (apply max adj-ticks)
+             (:min this)
+             %)
+         adj-ticks)))
+
+(defn catenary-ranges
+  [this]
+  (let [ys (catenary-ticks this)]
+    (partition 2 (interleave (butlast ys) (rest ys)))))
+
+(def catenary-range-behaviour
+  (assoc common/behaviour
+    :get-normalized-min :normalized-min
+    :get-normalized-max :normalized-max
+    :get-normalized-range :normalized-range
+    :get-ticks-per-range catenary-ticks-per-range
+    :get-ticks catenary-ticks
+    :get-ranges catenary-ranges
+    :print-colors print-colors))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Constructors   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -264,11 +272,22 @@
     (map->SineTemperatureRange
      (assoc r2 :ranges (sine-ranges r2)))))
 
+(defn new-catenary-range
+  [[curvature & _]]
+  (let [r1 (assoc (temperature-range-data) :curvature curvature)
+        ticks (catenary-normalized-ticks r1)
+        r2 (assoc r1 :normalized-max (apply max ticks)
+                     :normalized-min (apply min ticks))
+        r3 (assoc r2 :normalized-range (common/normalized-range r2))]
+    (map->CatenaryTemperatureRange
+     (assoc r3 :ranges (catenary-ranges r3)))))
+
 (defn new-range
-  [^Keyword type]
+  [^Keyword type args]
   (case type
     :linear (new-linear-range)
     :sine (new-sine-range)
+    :catenary (new-catenary-range args)
     :unsupported-temperature-range-type))
 
 (comment

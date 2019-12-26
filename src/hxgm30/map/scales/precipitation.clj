@@ -132,30 +132,37 @@
 ;; For the exponential ranges, we need to calculate the x that gives y = 16,000
 ;; (or whatever the max precip is). That's the max x, and we need to split that
 ;; up into a number of divisions that equal the color count.
-(defn mex-exponential-input
+(defn max-exponential-input
+  "This is the maximal 'x' value that corresponds to the maximal 'y' value, or
+  the value of 'precipitation-max'. Since this is the exponential range, the
+  maximal 'y' value must be the result of the maximal 'x' to the given power,
+  Thus, the maximal 'x' value must be the maximal 'y' value to the inverse of
+  the given power."
   [this]
   (Math/pow (:max this) (/ 1 (:power this))))
 
 (defn exponential-ticks-per-range
   [this]
-  (float (/ (mex-exponential-input this)
+  (float (/ (max-exponential-input this)
             (:color-count this))))
 
 (defn exponential-inputs
+  "These are the 'x' values that generate the corresponding 'y' values of the
+  'exponential-ticks' function."
   [this]
-  (let [color-count (:color-count this)]
-    (map #(* % (exponential-ticks-per-range this))
-         (range (inc color-count)))))
+  (map #(* % (exponential-ticks-per-range this))
+       (range (inc (:color-count this)))))
 
 (defn exponential-ticks
+  "This returns the 'y' values for the given scale, one for each color count."
   [this]
   (map #(Math/pow % (:power this))
        (exponential-inputs this)))
 
 (defn exponential-ranges
   [this]
-  (let [xs (exponential-ticks this)]
-    (partition 2 (interleave (butlast xs) (rest xs)))))
+  (let [ys (exponential-ticks this)]
+    (partition 2 (interleave (butlast ys) (rest ys)))))
 
 (def exponential-range-behaviour
   (assoc common/behaviour
