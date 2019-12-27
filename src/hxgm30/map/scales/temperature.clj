@@ -148,7 +148,7 @@
 
 (defn sine-ticks
   [this]
-  (map #(+ (:min this) (* (:range this) (/ (+ 1 %) 2)))
+  (map #(+ (:min this) (* (:range this) (/ (inc %) 2)))
        (sine-normalized-ticks this)))
 
 (defn sine-ranges
