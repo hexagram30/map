@@ -20,6 +20,7 @@
     [hxgm30.map.io :as map-io]
     [hxgm30.map.row :as row]
     [hxgm30.map.scales.core :as scales]
+    [hxgm30.map.scales.common :as common]
     [hxgm30.map.scales.elevation :as elev-scale]
     [hxgm30.map.scales.precipitation :as precip-scale]
     [hxgm30.map.scales.temperature :as temp-scale]
@@ -30,6 +31,7 @@
     [taoensso.timbre :as log]
     [trifl.java :refer [show-methods]])
   (:import
+    (edu.princeton.cs Gaussian)
     (javax.imageio ImageIO)
     (java.net URI)
     (java.nio.file Paths)
@@ -118,6 +120,8 @@
   (def biome-stats (reporter/get-biome-stats temp-im precip-im))
   (spit "/tmp/biomes.edn" biome-stats)
   (reporter/print-biomes biome-stats)
+
+  (map #(Gaussian/pdf x 0 0.5) (range 10))
 
   (def biome-stats (read-string (slurp "/tmp/biomes.edn")))
   (reporter/print-biomes biome-stats)

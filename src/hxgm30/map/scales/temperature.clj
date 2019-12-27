@@ -7,6 +7,7 @@
    [taoensso.timbre :as log])
   (:import
    (clojure.lang Keyword)
+   (edu.princeton.cs Gaussian)
    (org.apache.commons.math3.util FastMath))
   (:refer-clojure :exclude [get-ranges]))
 
@@ -50,9 +51,9 @@
 
 (defn print-color
   [this kelvin]
-  (println (str (format "%,-3d K (%,3d F): "
+  (println (str (format "%,-3.1f K (%,3d F): "
                         kelvin
-                        (int (util/to-fahrenheit kelvin)))
+                        (Math/round (util/to-fahrenheit kelvin)))
                 (util/color-map->ansi (common/get-color this kelvin)))))
 
 (defn print-colors
@@ -115,15 +116,6 @@
          :get-normalized-range :normalized-range
          :print-colors print-colors))
 
-(defn new-linear-range
-  []
-  (let [r1 (map->LinearTemperatureRange (assoc
-                                        (temperature-range-data)
-                                         :normalized-min temperature-min
-                                         :normalized-max temperature-max))
-        r2 (assoc r1 :normalized-range (common/normalized-range r1))]
-    (assoc r2 :ranges (common/linear-ranges r2))))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Sine-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -161,8 +153,8 @@
 
 (defn sine-ranges
   [this]
-  (let [xs (sine-ticks this)]
-    (partition 2 (interleave (butlast xs) (rest xs)))))
+  (let [ys (sine-ticks this)]
+    (partition 2 (interleave (butlast ys) (rest ys)))))
 
 (def sine-range-behaviour
   (assoc common/behaviour
@@ -217,8 +209,8 @@
 
 (defn tan-ranges
   [this]
-  (let [xs (tan-ticks this)]
-    (partition 2 (interleave (butlast xs) (rest xs)))))
+  (let [ys (tan-ticks this)]
+    (partition 2 (interleave (butlast ys) (rest ys)))))
 
 (def tan-range-behaviour
   (assoc common/behaviour
@@ -273,8 +265,8 @@
 
 (defn atanh-ranges
   [this]
-  (let [xs (atanh-ticks this)]
-    (partition 2 (interleave (butlast xs) (rest xs)))))
+  (let [ys (atanh-ticks this)]
+    (partition 2 (interleave (butlast ys) (rest ys)))))
 
 (def atanh-range-behaviour
   (assoc common/behaviour
@@ -284,6 +276,73 @@
     :get-ticks-per-range atanh-ticks-per-range
     :get-ticks atanh-ticks
     :get-ranges atanh-ranges
+    :print-colors print-colors))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Gaussian Normal PDF-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defrecord GaussianNormalPDFTemperatureRange
+  [color-count
+   colors
+   max
+   mean
+   min
+   mu
+   normalized-max
+   normalized-min
+   normalized-range
+   range
+   ranges
+   sigma-squared])
+
+(defn gaussian-ticks-per-range
+  [this]
+  (float (/ (:normalized-range this)
+            (:color-count this))))
+
+(defn gaussian-inputs
+  "These are the 'x' values that generate the corresponding 'y' values of the
+  'gaussian-normalized-ticks' function."
+  [this]
+  (map #(+ (:normalized-min this) (* % (gaussian-ticks-per-range this)))
+       (range (inc (:color-count this)))))
+
+(defn gaussian-normalized-ticks
+  [this]
+  (map #(Gaussian/pdf % (:mu this) (Math/sqrt (:sigma-squared this)))
+       (gaussian-inputs this)))
+
+(defn gaussian-normal-range
+  [this]
+  (let [ticks (gaussian-normalized-ticks this)
+        summed (reduce + ticks)]
+    (map #(* % (/ (:range this) summed))
+         ticks)))
+
+(defn gaussian-normal-temp-range
+  [this]
+  (reduce (fn [acc x] (conj acc (+ x  (if (empty? acc) 0 (last acc))))) []
+          (gaussian-normal-range this)))
+
+(defn gaussian-ticks
+  [this]
+  (mapv #(+ (:min this) %)
+        (gaussian-normal-temp-range this)))
+
+(defn gaussian-ranges
+  [this]
+  (let [ys (gaussian-ticks this)]
+    (partition 2 (interleave (butlast ys) (rest ys)))))
+
+(def gaussian-range-behaviour
+  (assoc common/behaviour
+    :get-normalized-min :normalized-min
+    :get-normalized-max :normalized-max
+    :get-normalized-range :normalized-range
+    :get-ticks-per-range gaussian-ticks-per-range
+    :get-ticks gaussian-ticks
+    :get-ranges gaussian-ranges
     :print-colors print-colors))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -397,6 +456,17 @@
     (map->InverseHyperbolicTangentTemperatureRange
      (assoc r2 :ranges (atanh-ranges r2)))))
 
+(defn new-gaussian-range
+  [[sigma-squared mu & _]]
+  (let [r1 (assoc (temperature-range-data)
+             :mu mu
+             :normalized-min -1
+             :normalized-max 1
+             :sigma-squared sigma-squared)
+        r2 (assoc r1 :normalized-range (common/normalized-range r1))]
+    (map->GaussianNormalPDFTemperatureRange
+     (assoc r2 :ranges (gaussian-ranges r2)))))
+
 (defn new-catenary-range
   [[curvature & _]]
   (let [r1 (assoc (temperature-range-data) :curvature curvature)
@@ -411,6 +481,7 @@
   [^Keyword type args]
   (case type
     :atanh (new-atanh-range)
+    :gaussian (new-gaussian-range args)
     :linear (new-linear-range)
     :sine (new-sine-range)
     :tangent (new-tangent-range)

@@ -11,6 +11,7 @@
                                     LinearPrecipitationRange
                                     ReverseExponentialPrecipitationRange)
    (hxgm30.map.scales.temperature CatenaryTemperatureRange
+                                  GaussianNormalPDFTemperatureRange
                                   InverseHyperbolicTangentTemperatureRange
                                   LinearTemperatureRange
                                   SineTemperatureRange
@@ -60,6 +61,10 @@
 (extend CatenaryTemperatureRange
         TemperatureRange temperature/temperature-range-behaviour
         ScaledRange temperature/catenary-range-behaviour)
+
+(extend GaussianNormalPDFTemperatureRange
+        TemperatureRange temperature/temperature-range-behaviour
+        ScaledRange temperature/gaussian-range-behaviour)
 
 (extend InverseHyperbolicTangentTemperatureRange
         TemperatureRange temperature/temperature-range-behaviour
@@ -118,6 +123,12 @@
   (for [row coll]
     (println row))))
 
+(defn param->float
+  [param]
+  (if (nil? param)
+    param
+    (Float/parseFloat param)))
+
 (defn -main
   "Example usage:
 
@@ -129,7 +140,7 @@
     $ lein scale show ticks-per-range precipitation exponential 4.5
 
   "
-  [cmd subcmd scale-type scale-subtype & [scale-param & args]]
+  [cmd subcmd scale-type scale-subtype & [param1 & [param2 & args]]]
   (logger/set-level! '[hxgm30] :error)
   (system/setup-manager cli-setup-options)
   (system/startup)
@@ -141,9 +152,8 @@
   (let [subcmd (keyword subcmd)
         scale (new-scale (keyword scale-type)
                          (keyword scale-subtype)
-                         (if (nil? scale-param)
-                           scale-param
-                           (Float/parseFloat scale-param)))]
+                         (param->float param1)
+                         (param->float param2))]
     (case (keyword cmd)
       :show (case subcmd
               :legend (print-colors scale)

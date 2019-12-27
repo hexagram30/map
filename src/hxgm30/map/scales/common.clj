@@ -87,14 +87,18 @@
 ;;;   Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; XXX let's change this to operate on :ranges instead ... for each element of
-;;     ranges, take the mean between start and end; we'll probably need to include
-;;     an option for tick-count instead of step
+(defn get-midpoint
+  [[v1 v2]]
+  (+ (min v1 v2) (/ (Math/abs (- v2 v1)) 2)))
 
-;;(map #(+ (first %) (/ (- (second %) (first %)) 2)) (:ranges this))
+(defn get-midpoints
+  ([this]
+   (get-midpoints this (:ranges this)))
+  ([_ points]
+   (map get-midpoint points)))
 
 (defn print-colors
-  [this print-fn step]
-  (let [output (mapv (partial print-fn this)
-                     (range (:min this) (+ (:max this) step) step))]
+  [this print-fn count]
+  ;; XXX add support for fewer or greater numbers of rows to display
+  (let [output (mapv (partial print-fn this) (get-midpoints this))]
     (println (string/join output))))
