@@ -6,7 +6,8 @@
    [hxgm30.map.util :as util]
    [taoensso.timbre :as log])
   (:import
-   (clojure.lang Keyword))
+   (clojure.lang Keyword)
+   (org.apache.commons.math3.util FastMath))
   (:refer-clojure :exclude [get-ranges]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -174,7 +175,7 @@
     :print-colors print-colors))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;   Tangent-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Tangent-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defrecord TangentTemperatureRange
@@ -227,6 +228,62 @@
     :get-ticks-per-range tan-ticks-per-range
     :get-ticks tan-ticks
     :get-ranges tan-ranges
+    :print-colors print-colors))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Inverse-Hyperbolic-Tangent-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defrecord InverseHyperbolicTangentTemperatureRange
+  [color-count
+   colors
+   max
+   mean
+   min
+   normalized-max
+   normalized-min
+   normalized-range
+   range
+   ranges])
+
+(defn atanh-ticks-per-range
+  [this]
+  (float (/ (:normalized-range this)
+            (:color-count this))))
+
+(defn atanh-inputs
+  "These are the 'x' values that generate the corresponding 'y' values of the
+  'atanh-normalized-ticks' function."
+  [this]
+  (map #(+ (:normalized-min this) (* % (atanh-ticks-per-range this)))
+       (range (inc (:color-count this)))))
+
+(defn atanh-normalized-ticks
+  [this]
+  (map #(FastMath/atanh %)
+       (atanh-inputs this)))
+
+(defn atanh-ticks
+  [this]
+  (let [norm-ticks (atanh-normalized-ticks this)
+        max-tick (apply max norm-ticks)
+        min-tick (apply min norm-ticks)]
+    (map #(+ (:min this) (* (:range this) (/ (+ (Math/abs min-tick) %) max-tick 2)))
+         norm-ticks)))
+
+(defn atanh-ranges
+  [this]
+  (let [xs (atanh-ticks this)]
+    (partition 2 (interleave (butlast xs) (rest xs)))))
+
+(def atanh-range-behaviour
+  (assoc common/behaviour
+    :get-normalized-min :normalized-min
+    :get-normalized-max :normalized-max
+    :get-normalized-range :normalized-range
+    :get-ticks-per-range atanh-ticks-per-range
+    :get-ticks atanh-ticks
+    :get-ranges atanh-ranges
     :print-colors print-colors))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -331,6 +388,15 @@
     (map->TangentTemperatureRange
      (assoc r2 :ranges (tan-ranges r2)))))
 
+(defn new-atanh-range
+  []
+  (let [r1 (assoc (temperature-range-data)
+             :normalized-min -0.9
+             :normalized-max 0.9)
+        r2 (assoc r1 :normalized-range (common/normalized-range r1))]
+    (map->InverseHyperbolicTangentTemperatureRange
+     (assoc r2 :ranges (atanh-ranges r2)))))
+
 (defn new-catenary-range
   [[curvature & _]]
   (let [r1 (assoc (temperature-range-data) :curvature curvature)
@@ -344,6 +410,7 @@
 (defn new-range
   [^Keyword type args]
   (case type
+    :atanh (new-atanh-range)
     :linear (new-linear-range)
     :sine (new-sine-range)
     :tangent (new-tangent-range)
