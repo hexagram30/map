@@ -49,7 +49,7 @@
 (defn print-color
   [this rate]
   ;;(println (str (format "%,-7d mils/year: " rate)
-  (println (str (format "%,-6d mm/year: " rate)
+  (println (str (format "%,-6.0f mm/year: " rate)
                 (util/color-map->ansi (common/get-color this rate)))))
 
 (defn print-colors

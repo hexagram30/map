@@ -134,6 +134,7 @@
 
     $ lein scale show legend temperature linear
     $ lein scale show legend temperature sine
+    $ lein scale show legend temperature gaussian 0.4 -0.1
     $ lein scale show legend precipitation exponential 4.5
     $ lein scale show ranges precipitation exponential 4.5
     $ lein scale show ticks precipitation exponential 4.5
