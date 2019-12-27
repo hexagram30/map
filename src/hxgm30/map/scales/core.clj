@@ -11,6 +11,7 @@
                                     LinearPrecipitationRange
                                     ReverseExponentialPrecipitationRange)
    (hxgm30.map.scales.temperature CatenaryTemperatureRange
+                                  InverseHyperbolicTangentTemperatureRange
                                   LinearTemperatureRange
                                   SineTemperatureRange
                                   TangentTemperatureRange))
@@ -59,6 +60,10 @@
 (extend CatenaryTemperatureRange
         TemperatureRange temperature/temperature-range-behaviour
         ScaledRange temperature/catenary-range-behaviour)
+
+(extend InverseHyperbolicTangentTemperatureRange
+        TemperatureRange temperature/temperature-range-behaviour
+        ScaledRange temperature/atanh-range-behaviour)
 
 (extend LinearTemperatureRange
         TemperatureRange temperature/temperature-range-behaviour
