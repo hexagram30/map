@@ -135,7 +135,7 @@
   files, then creates a new file with colors derived from these and the biomes
   lookup data."
   ([]
-   (create-image (temperature/read-adjusted-temperature)
+   (create-image (temperature/read-temperature)
                  (precipitation/read-precipitation)
                  (map-io/read-png biomes-colorspace-file)
                  biomes-file))
@@ -214,5 +214,6 @@
                (log/errorf "Undefined subcommand '%s'" subcmd))
       :show (case subcmd
               :legend (print-legend)
+              :matrix (print-colors-matrix)
               (log/errorf "Undefined subcommand '%s'" subcmd))
       (log/errorf "Undefined command '%s'" subcmd))))
