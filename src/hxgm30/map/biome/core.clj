@@ -188,6 +188,13 @@
   :throw-errors true})
 
 (defn -main
+  "Example usage:
+
+    $ lein biome regen image
+    $ lein biome regen tiny-image
+    $ lein show legend
+
+  "
   [& [cmd & [subcmd & args]]]
   (logger/set-level! '[hxgm30] :error)
   (system/setup-manager cli-setup-options)

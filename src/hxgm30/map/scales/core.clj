@@ -1,14 +1,19 @@
 (ns hxgm30.map.scales.core
   (:require
+   [clojusc.system-manager.core :as system]
+   [clojusc.twig :as logger]
+   [hxgm30.map.components.core]
    [hxgm30.map.scales.precipitation :as precipitation]
-   [hxgm30.map.scales.temperature :as temperature])
+   [hxgm30.map.scales.temperature :as temperature]
+   [taoensso.timbre :as log])
   (:import
    (hxgm30.map.scales.precipitation ExponentialPrecipitationRange
                                     LinearPrecipitationRange
                                     ReverseExponentialPrecipitationRange)
    (hxgm30.map.scales.temperature CatenaryTemperatureRange
                                   LinearTemperatureRange
-                                  SineTemperatureRange)))
+                                  SineTemperatureRange))
+  (:gen-class))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Protocols   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -88,3 +93,52 @@
         :temperature (temperature/new-range sub-type rest)
         :precipitation (precipitation/new-range sub-type rest)
         :unsupported-scale-type))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   CLI Usage   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def cli-setup-options {
+                        :init 'hxgm30.map.components.core/cli
+                        :throw-errors true})
+
+(defn print-data
+  [coll]
+  (doall
+  (for [row coll]
+    (println row))))
+
+(defn -main
+  "Example usage:
+
+    $ lein scale show legend temperature linear
+    $ lein scale show legend temperature sine
+    $ lein scale show legend precipitation exponential 4.5
+    $ lein scale show ranges precipitation exponential 4.5
+    $ lein scale show ticks precipitation exponential 4.5
+    $ lein scale show ticks-per-range precipitation exponential 4.5
+
+  "
+  [cmd subcmd scale-type scale-subtype & [scale-param & args]]
+  (logger/set-level! '[hxgm30] :error)
+  (system/setup-manager cli-setup-options)
+  (system/startup)
+  (log/debug "Command:" cmd)
+  (log/debug "Sub-command:" subcmd)
+  (log/debug "Scale type:" scale-type)
+  (log/debug "Scale subtype:" scale-subtype)
+  (log/debug "Args:" args)
+  (let [subcmd (keyword subcmd)
+        scale (new-scale (keyword scale-type)
+                         (keyword scale-subtype)
+                         (if (nil? scale-param)
+                           scale-param
+                           (Float/parseFloat scale-param)))]
+    (case (keyword cmd)
+      :show (case subcmd
+              :legend (print-colors scale)
+              :ranges (print-data (get-ranges scale))
+              :ticks (print-data (get-ticks scale))
+              :ticks-per-range (print-data (get-ticks-per-range scale))
+              (log/errorf "Undefined subcommand '%s'" subcmd))
+      (log/errorf "Undefined command '%s'" subcmd))))

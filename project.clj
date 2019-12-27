@@ -24,16 +24,22 @@
   :exclusions [
     ;; JDK version issues overrides
     [org.clojure/clojure]
+    [org.clojure/clojurescript]
+    [org.clojure/core.incubator]
     [org.clojure/core.rrb-vector]
     [org.clojure/tools.reader]]
   :dependencies [
     ;; JDK version issues overrides
+    [org.clojure/core.incubator "0.1.4"]
     [org.clojure/core.rrb-vector "0.1.1"]
     [org.clojure/tools.reader "1.3.2"]
     ;; Regular dependencies
-    [clojusc/system-manager "0.3.0"]
-    [clojusc/twig "0.4.1"]
-    [com.evocomputing/colors "1.0.4"]
+    [clojusc/system-manager "0.3.0" :exclusions [
+      org.clojure/clojure org.clojure/core.incubator]]
+    [clojusc/twig "0.4.1" :exclusions [
+      org.clojure/clojure org.clojure/core.rrb-vector]]
+    [com.evocomputing/colors "1.0.4" :exclusions [
+      org.clojure/clojure org.clojure/core.incubator]]
     [hexagram30/common "0.1.0-SNAPSHOT"]
     [org.apache.commons/commons-math3 "3.6.1"]
     [org.clojure/clojure "1.10.1"]
@@ -49,17 +55,23 @@
         [clojusc/trifl "0.4.2"]
         [com.github.davidmoten/hilbert-curve "0.2.1"]
         [org.clojure/tools.namespace "0.3.1"]]
+      :middleware [ultra.plugin/middleware]
       :plugins [
         [lein-shell "0.5.0"]
-        [venantius/ultra "0.6.0"]]
+        [org.clojure/core.rrb-vector "0.1.1" :exclusions [
+          org.clojure/clojure]]
+        [venantius/ultra "0.6.0" :exclusions [
+          org.clojure/clojure org.clojure/core.rrb-vector]]]
       :source-paths ["dev-resources/src"]
-          :resource-paths ["assets/images"]
+        :resource-paths ["assets/images"]
       :repl-options {
         :init-ns hxgm30.map.repl
         :prompt ~get-prompt
         :init ~(println (get-banner))}}
     :biome {
       :main hxgm30.map.biome.core}
+    :scales {
+      :main hxgm30.map.scales.core}
     :lint {
       :source-paths ^:replace ["src"]
       :test-paths ^:replace []
@@ -98,6 +110,7 @@
       ; ["eastwood"]
       ]
     "biome" ["with-profile" "+dev,+biome" "run"]
+    "scale" ["with-profile" "+dev,+scales" "run"]
     "ltest" ["with-profile" "+test" "ltest"]
     "ltest-clean" ["do"
       ["clean"]
