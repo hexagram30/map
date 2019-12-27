@@ -47,6 +47,7 @@
     [org.flatland/ordered "1.5.7"]
     [trystan/delaunay-triangulation "1.0.1"]
     [trystan/voronoi-diagram "1.0.0"]]
+  :java-source-paths ["src"]
   :profiles {
     :ubercompile {
       :aot :all}
