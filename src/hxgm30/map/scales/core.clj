@@ -12,7 +12,8 @@
                                     ReverseExponentialPrecipitationRange)
    (hxgm30.map.scales.temperature CatenaryTemperatureRange
                                   LinearTemperatureRange
-                                  SineTemperatureRange))
+                                  SineTemperatureRange
+                                  TangentTemperatureRange))
   (:gen-class))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -66,6 +67,10 @@
 (extend SineTemperatureRange
         TemperatureRange temperature/temperature-range-behaviour
         ScaledRange temperature/sine-range-behaviour)
+
+(extend TangentTemperatureRange
+        TemperatureRange temperature/temperature-range-behaviour
+        ScaledRange temperature/tan-range-behaviour)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Precipitation Implementations   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -174,6 +174,62 @@
     :print-colors print-colors))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Tangent-based Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defrecord TangentTemperatureRange
+  [color-count
+   colors
+   max
+   mean
+   min
+   normalized-max
+   normalized-min
+   normalized-range
+   range
+   ranges])
+
+(defn tan-ticks-per-range
+  [this]
+  (float (/ (:normalized-range this)
+            (:color-count this))))
+
+(defn tan-inputs
+  "These are the 'x' values that generate the corresponding 'y' values of the
+  'tan-normalized-ticks' function."
+  [this]
+  (map #(+ (:normalized-min this) (* % (tan-ticks-per-range this)))
+       (range (inc (:color-count this)))))
+
+(defn tan-normalized-ticks
+  [this]
+  (map #(Math/tan %)
+       (tan-inputs this)))
+
+(defn tan-ticks
+  [this]
+  (let [norm-ticks (tan-normalized-ticks this)
+        max-tick (apply max norm-ticks)
+        min-tick (apply min norm-ticks)]
+    (map #(+ (:min this) (* (:range this) (/ (+ (Math/abs min-tick) %) max-tick 2)))
+         norm-ticks)))
+
+(defn tan-ranges
+  [this]
+  (let [xs (tan-ticks this)]
+    (partition 2 (interleave (butlast xs) (rest xs)))))
+
+(def tan-range-behaviour
+  (assoc common/behaviour
+    :get-normalized-min :normalized-min
+    :get-normalized-max :normalized-max
+    :get-normalized-range :normalized-range
+    :get-ticks-per-range tan-ticks-per-range
+    :get-ticks tan-ticks
+    :get-ranges tan-ranges
+    :print-colors print-colors))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Catenary Ranges   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -266,6 +322,15 @@
     (map->SineTemperatureRange
      (assoc r2 :ranges (sine-ranges r2)))))
 
+(defn new-tangent-range
+  []
+  (let [r1 (assoc (temperature-range-data)
+             :normalized-min -0.5
+             :normalized-max 0.5)
+        r2 (assoc r1 :normalized-range (common/normalized-range r1))]
+    (map->TangentTemperatureRange
+     (assoc r2 :ranges (tan-ranges r2)))))
+
 (defn new-catenary-range
   [[curvature & _]]
   (let [r1 (assoc (temperature-range-data) :curvature curvature)
@@ -281,6 +346,7 @@
   (case type
     :linear (new-linear-range)
     :sine (new-sine-range)
+    :tangent (new-tangent-range)
     :catenary (new-catenary-range args)
     :unsupported-temperature-range-type))
 
