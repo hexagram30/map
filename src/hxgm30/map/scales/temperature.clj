@@ -144,7 +144,7 @@
   (float (/ (:normalized-range this)
             (/ (:color-count this) 2))))
 
-(defn sine-ticks
+(defn sine-normalized-ticks
   [this]
   (conj
    (reverse
@@ -153,21 +153,15 @@
          (range (:color-count this))))
    -1))
 
-(defn sine->temp
-  [this s]
-  (+ (- (:max this) (:mean this))
-     (* (:mean this) s)))
-
-(defn sine-normalized-ranges
+(defn sine-ticks
   [this]
-  (let [xs (sine-ticks this)]
-    (partition 2 (interleave (butlast xs) (rest xs)))))
+  (map #(+ (:min this) (* (:range this) (/ (+ 1 %) 2)))
+       (sine-normalized-ticks this)))
 
 (defn sine-ranges
   [this]
-  (map (fn [[x y]]
-         [(sine->temp this x) (sine->temp this y)])
-       (sine-normalized-ranges this)))
+  (let [xs (sine-ticks this)]
+    (partition 2 (interleave (butlast xs) (rest xs)))))
 
 (def sine-range-behaviour
   (assoc common/behaviour
