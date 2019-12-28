@@ -19,3 +19,5 @@ pom.xml.asc
 /kafka
 *.DS_Store
 /old-resources
+/docs/research/notebooks/.ipynb_checkpoints
+/docs/research/notebooks/common-lisp-jupyter
