@@ -38,9 +38,9 @@
       org.clojure/clojure org.clojure/core.incubator]]
     [clojusc/twig "0.4.1" :exclusions [
       org.clojure/clojure org.clojure/core.rrb-vector]]
-    [com.evocomputing/colors "1.0.4" :exclusions [
+    [com.evocomputing/colors "1.0.6" :exclusions [
       org.clojure/clojure org.clojure/core.incubator]]
-    [hexagram30/common "0.1.0-SNAPSHOT"]
+    [hexagram30/common "0.2.1"]
     [org.apache.commons/commons-math3 "3.6.1"]
     [org.clojure/clojure "1.10.1"]
     [org.clojure/data.avl "0.1.0"]
@@ -77,7 +77,7 @@
       :source-paths ^:replace ["src"]
       :test-paths ^:replace []
       :plugins [
-        [jonase/eastwood "0.3.6"]
+        [jonase/eastwood "0.3.7"]
         [lein-ancient "0.6.15"]
         [lein-kibit "0.1.8"]
         [lein-nvd "1.3.1"]]}
