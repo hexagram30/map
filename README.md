@@ -4,9 +4,11 @@
 
 [![][logo]][logo-large]
 
-## Sample World Map
+## Examples
 
-[![][map]][map-large]
+[![][biome]][biome-large]
+
+[![][alt]][alt-large] [![][temp]][temp-large]
 
 ## Usage
 
@@ -30,7 +32,7 @@ service's ["About" page][libera-about].
 ## License
 
 ```
-Copyright © 2018, Hexagram30 <hexagram30@cnbb.games>
+Copyright © 2018-2020, Hexagram30 <hexagram30@cnbb.games>
 
 Apache License, Version 2.0
 ```
@@ -39,5 +41,10 @@ Apache License, Version 2.0
 
 [logo]: https://raw.githubusercontent.com/hexagram30/resources/master/branding/logo/h30-logo-2-long-with-text-x695.png
 [logo-large]: https://raw.githubusercontent.com/hexagram30/resources/master/branding/logo/h30-logo-2-long-with-text-x3440.png
-[map]: https://raw.githubusercontent.com/hexagram30/map/master/resources/planets/ilunao/altitude-small.jpg
-[map-large]: https://raw.githubusercontent.com/hexagram30/map/master/resources/planets/ilunao/altitude.jpg
+[biome]: https://raw.githubusercontent.com/hexagram30/map/master/assets/images/planets/ilunao/biome-mashup-small.jpg
+[biome-large]: https://raw.githubusercontent.com/hexagram30/map/master/assets/images/planets/ilunao/biome-mashup-medium.jpg
+[alt]: https://raw.githubusercontent.com/hexagram30/map/master/assets/images/planets/ilunao/altitutde-rivers-lakes-tiny.jpg
+[alt-large]: https://raw.githubusercontent.com/hexagram30/map/assets/images/planets/ilunao/altitutde-rivers-lakes-medium.jpg
+[temp]: https://raw.githubusercontent.com/hexagram30/map/master/resources/planets/ilunao/temperature-tiny.png
+[temp-large]: https://raw.githubusercontent.com/hexagram30/map/master/resources/planets/ilunao/temperature.png
+
