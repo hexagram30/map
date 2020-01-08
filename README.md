@@ -41,10 +41,9 @@ Apache License, Version 2.0
 
 [logo]: https://raw.githubusercontent.com/hexagram30/resources/master/branding/logo/h30-logo-2-long-with-text-x695.png
 [logo-large]: https://raw.githubusercontent.com/hexagram30/resources/master/branding/logo/h30-logo-2-long-with-text-x3440.png
-[biome]: https://raw.githubusercontent.com/hexagram30/map/master/assets/images/planets/ilunao/biome-mashup-small.jpg
-[biome-large]: https://raw.githubusercontent.com/hexagram30/map/master/assets/images/planets/ilunao/biome-mashup-medium.jpg
-[alt]: https://raw.githubusercontent.com/hexagram30/map/master/assets/images/planets/ilunao/altitutde-rivers-lakes-tiny.jpg
-[alt-large]: https://raw.githubusercontent.com/hexagram30/map/assets/images/planets/ilunao/altitutde-rivers-lakes-medium.jpg
+[biome]: https://raw.githubusercontent.com/hexagram30/map/master/assets/images/planets/ilunao/biomes-mashup-small.jpg
+[biome-large]: https://raw.githubusercontent.com/hexagram30/map/master/assets/images/planets/ilunao/biomes-mashup-medium.jpg
+[alt]: https://raw.githubusercontent.com/hexagram30/map/master/assets/images/planets/ilunao/altitude-rivers-lakes-tiny.jpg
+[alt-large]: https://raw.githubusercontent.com/hexagram30/map/assets/images/planets/ilunao/altitude-rivers-lakes-medium.jpg
 [temp]: https://raw.githubusercontent.com/hexagram30/map/master/resources/planets/ilunao/temperature-tiny.png
 [temp-large]: https://raw.githubusercontent.com/hexagram30/map/master/resources/planets/ilunao/temperature.png
-
